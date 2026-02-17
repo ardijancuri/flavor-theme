@@ -350,7 +350,17 @@ function flavor_customizer_homepage( $wp_customize ) {
 		'type'    => 'checkbox',
 	) );
 
-	for ( $i = 1; $i <= 12; $i++ ) {
+	$wp_customize->add_setting( 'flavor_brands_title', array(
+		'default'           => esc_html__( 'Our Brands', 'flavor' ),
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	$wp_customize->add_control( 'flavor_brands_title', array(
+		'label'   => esc_html__( 'Section Title', 'flavor' ),
+		'section' => 'flavor_brands',
+		'type'    => 'text',
+	) );
+
+	for ( $i = 1; $i <= 8; $i++ ) {
 		$wp_customize->add_setting( "flavor_brand_logo_{$i}_image", array(
 			'default'           => '',
 			'sanitize_callback' => 'esc_url_raw',
