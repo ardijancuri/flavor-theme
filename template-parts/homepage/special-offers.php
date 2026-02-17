@@ -151,11 +151,11 @@ function flavorSpecialOffers() {
 			this.loading = true;
 			const data = new FormData();
 			data.append('action', 'flavor_load_products');
-			data.append('nonce', flavorAjax.nonce);
+			data.append('nonce', flavorData.nonce);
 			data.append('context', 'special_offers');
 			data.append('per_page', 7);
 
-			fetch(flavorAjax.url, { method: 'POST', body: data })
+			fetch(flavorData.ajaxUrl, { method: 'POST', body: data })
 				.then(r => r.json())
 				.then(res => {
 					if (res.success && res.data.products) {

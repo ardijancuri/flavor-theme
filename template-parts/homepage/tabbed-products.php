@@ -66,18 +66,15 @@ $see_all_link = get_theme_mod( 'flavor_tabbed_products_see_all_link', '' );
 		<?php endforeach; ?>
 	</div>
 
-	<!-- Product Grid -->
-	<div class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
-		<!-- Skeleton placeholders -->
-		<template x-if="loading">
-			<template x-for="n in 10" :key="n">
-				<?php get_template_part( 'template-parts/product/product-card-skeleton' ); ?>
-			</template>
-		</template>
-
-		<!-- Products -->
-		<div x-show="!loading" x-html="productsHtml"></div>
+	<!-- Skeleton Grid (shown while loading) -->
+	<div x-show="loading" class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
+		<?php for ( $i = 0; $i < 10; $i++ ) : ?>
+			<?php get_template_part( 'template-parts/product/product-card-skeleton' ); ?>
+		<?php endfor; ?>
 	</div>
+
+	<!-- Product Grid (AJAX loaded) -->
+	<div x-show="!loading" x-html="productsHtml" class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3"></div>
 </section>
 
 <script>
@@ -100,11 +97,11 @@ function flavorTabbedProducts() {
 
 			const data = new FormData();
 			data.append('action', 'flavor_load_products');
-			data.append('nonce', flavorAjax.nonce);
+			data.append('nonce', flavorData.nonce);
 			data.append('category', catId);
 			data.append('per_page', 10);
 
-			fetch(flavorAjax.url, { method: 'POST', body: data })
+			fetch(flavorData.ajaxUrl, { method: 'POST', body: data })
 				.then(r => r.json())
 				.then(res => {
 					if (res.success) {

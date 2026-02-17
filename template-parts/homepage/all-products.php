@@ -83,11 +83,11 @@ function flavorAllProducts() {
 
 			const data = new FormData();
 			data.append('action', 'flavor_load_more_products');
-			data.append('nonce', flavorAjax.nonce);
+			data.append('nonce', flavorData.nonce);
 			data.append('page', this.page);
 			data.append('per_page', <?php echo (int) $per_page; ?>);
 
-			fetch(flavorAjax.url, { method: 'POST', body: data })
+			fetch(flavorData.ajaxUrl, { method: 'POST', body: data })
 				.then(r => r.json())
 				.then(res => {
 					if (res.success && res.data.html) {

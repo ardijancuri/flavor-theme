@@ -62,7 +62,7 @@ function flavor_enqueue_assets() {
     // Localize.
     $localize_data = array(
         'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
-        'nonce'       => wp_create_nonce( 'flavor_nonce' ),
+        'nonce'       => wp_create_nonce( 'flavor_ajax_nonce' ),
         'homeUrl'     => home_url( '/' ),
     );
 
