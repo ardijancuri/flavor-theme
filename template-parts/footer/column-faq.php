@@ -19,7 +19,7 @@ $faq_url = home_url( '/faq' );
         <svg class="w-4 h-4 lg:hidden transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
     </h4>
 
-    <ul class="space-y-2 text-sm text-gray-400" x-show="open" x-cloak x-transition class="lg:!block">
+    <ul class="space-y-2 text-sm text-gray-400 lg:!block" x-show="open" x-cloak x-transition>
         <li>
             <a href="<?php echo esc_url( $faq_url . '#about' ); ?>" class="hover:text-white transition-colors">
                 <?php esc_html_e( 'About', 'flavor' ); ?>
