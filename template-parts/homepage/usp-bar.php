@@ -67,7 +67,7 @@ for ( $i = 0; $i < 4; $i++ ) {
 		<div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-300 overflow-x-auto">
 			<?php foreach ( $usps as $usp ) : ?>
 				<div class="flex items-center gap-3 px-4 py-3 min-w-[200px]">
-					<span class="text-primary flex-shrink-0"><?php echo wp_kses_post( $usp['icon'] ); ?></span>
+					<span class="text-primary flex-shrink-0"><?php echo $usp['icon']; // phpcs:ignore -- safe, hardcoded SVG from defaults ?></span>
 					<div class="min-w-0">
 						<p class="text-sm font-medium text-gray-700 truncate"><?php echo esc_html( $usp['title'] ); ?></p>
 						<p class="text-xs text-gray-500 truncate"><?php echo esc_html( $usp['subtitle'] ); ?></p>

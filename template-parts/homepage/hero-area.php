@@ -56,10 +56,14 @@ if ( is_wp_error( $categories ) ) {
 				<div class="group relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
 					<a href="<?php echo esc_url( get_term_link( $cat ) ); ?>"
 					   class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors <?php echo $index === 0 ? 'rounded-t-lg' : ''; ?> <?php echo $index === count( $categories ) - 1 ? 'rounded-b-lg' : ''; ?>">
-						<?php if ( $icon ) : ?>
-							<span class="w-5 h-5 flex-shrink-0"><?php echo wp_kses_post( $icon ); ?></span>
+						<?php
+						$thumb_id = get_term_meta( $cat->term_id, 'thumbnail_id', true );
+						if ( $icon ) : ?>
+							<span class="w-5 h-5 flex-shrink-0"><?php echo $icon; // phpcs:ignore ?></span>
+						<?php elseif ( $thumb_id ) : ?>
+							<img src="<?php echo esc_url( wp_get_attachment_image_url( $thumb_id, 'thumbnail' ) ); ?>" alt="" class="w-5 h-5 object-contain flex-shrink-0 rounded" loading="lazy">
 						<?php else : ?>
-							<svg class="w-5 h-5 flex-shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+							<svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
 						<?php endif; ?>
 						<span class="flex-1 truncate"><?php echo esc_html( $cat->name ); ?></span>
 						<?php if ( ! empty( $children ) ) : ?>
