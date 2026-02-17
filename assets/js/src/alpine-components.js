@@ -190,7 +190,77 @@ document.addEventListener('alpine:init', () => {
 
   Alpine.data('shopPage', () => ({
     view: 'grid',
-    mobileFiltersOpen: false,
+    quickFilter: '',
+    sortBy: 'default',
+    filterDrawerOpen: false,
+    loading: false,
+    hasMore: false,
+    currentPage: 1,
+    totalProducts: 0,
+    brandSearch: '',
+    showAll: false,
+    filters: {
+      price_min: '',
+      price_max: '',
+      categories: [],
+      brands: [],
+      in_stock: false,
+      out_of_stock: false,
+      on_sale: false,
+      attributes: {},
+    },
+    get activeFilterCount() {
+      let count = 0;
+      if (this.filters.price_min || this.filters.price_max) count++;
+      count += this.filters.categories.length;
+      count += this.filters.brands.length;
+      if (this.filters.in_stock) count++;
+      if (this.filters.out_of_stock) count++;
+      if (this.filters.on_sale) count++;
+      return count;
+    },
+    get activeFilters() {
+      const chips = [];
+      if (this.filters.price_min || this.filters.price_max) {
+        chips.push({ key: 'price', label: (this.filters.price_min || '0') + ' - ' + (this.filters.price_max || '∞'), remove: () => { this.filters.price_min = ''; this.filters.price_max = ''; } });
+      }
+      this.filters.categories.forEach(c => {
+        chips.push({ key: 'cat-' + c, label: c, remove: () => { this.filters.categories = this.filters.categories.filter(x => x !== c); } });
+      });
+      this.filters.brands.forEach(b => {
+        chips.push({ key: 'brand-' + b, label: b, remove: () => { this.filters.brands = this.filters.brands.filter(x => x !== b); } });
+      });
+      if (this.filters.in_stock) chips.push({ key: 'in_stock', label: 'In Stock', remove: () => { this.filters.in_stock = false; } });
+      if (this.filters.out_of_stock) chips.push({ key: 'out_of_stock', label: 'Out of Stock', remove: () => { this.filters.out_of_stock = false; } });
+      if (this.filters.on_sale) chips.push({ key: 'on_sale', label: 'On Sale', remove: () => { this.filters.on_sale = false; } });
+      return chips;
+    },
+    clearAllFilters() {
+      this.filters.price_min = '';
+      this.filters.price_max = '';
+      this.filters.categories = [];
+      this.filters.brands = [];
+      this.filters.in_stock = false;
+      this.filters.out_of_stock = false;
+      this.filters.on_sale = false;
+      this.filters.attributes = {};
+      this.quickFilter = '';
+    },
+    toggleArrayFilter(key, value) {
+      const arr = this.filters[key];
+      const idx = arr.indexOf(value);
+      if (idx === -1) { arr.push(value); } else { arr.splice(idx, 1); }
+    },
+    toggleAttributeFilter(taxonomy, value) {
+      if (!this.filters.attributes[taxonomy]) this.filters.attributes[taxonomy] = [];
+      const arr = this.filters.attributes[taxonomy];
+      const idx = arr.indexOf(value);
+      if (idx === -1) { arr.push(value); } else { arr.splice(idx, 1); }
+    },
+    applyFilters() {
+      // Placeholder — filters are reactive via Alpine bindings
+      // Future: AJAX product reload based on filter state
+    },
   }));
 
   /* ── Mobile Sticky Bar (Single Product) ──────────────────── */
