@@ -68,13 +68,8 @@ $see_all_link = get_theme_mod( 'flavor_tabbed_products_see_all_link', '' );
 		<?php endforeach; ?>
 	</div>
 
-	<!-- Skeleton Grid (shown while loading) -->
-	<div x-show="loading" class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
-		<template x-for="n in skeletonCount" :key="n">
-			<?php get_template_part( 'template-parts/product/product-card-skeleton' ); ?>
-		</template>
-	</div>
-
 	<!-- Product Grid (AJAX loaded) -->
-	<div x-show="!loading" x-html="productsHtml" class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3"></div>
+	<div x-html="productsHtml"
+		 class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3 transition-opacity duration-300"
+		 :class="loading ? 'opacity-0' : 'opacity-100'"></div>
 </section>

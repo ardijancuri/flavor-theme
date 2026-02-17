@@ -25,7 +25,6 @@ document.addEventListener('alpine:init', () => {
     activeCat: opts.initialCat || 0,
     loading: true,
     productsHtml: '',
-    skeletonCount: 5,
 
     init() {
       this.loadProducts();
@@ -47,11 +46,6 @@ document.addEventListener('alpine:init', () => {
       }).then(res => {
         if (res.success) {
           this.productsHtml = res.data.html || '';
-          // Count products for next skeleton render
-          const tmp = document.createElement('div');
-          tmp.innerHTML = this.productsHtml;
-          const count = tmp.children.length;
-          if (count > 0) this.skeletonCount = count;
         }
         this.loading = false;
       }).catch(() => {
