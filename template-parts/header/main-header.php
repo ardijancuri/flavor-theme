@@ -57,7 +57,7 @@ $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalin
 
                 <!-- Cart -->
                 <button
-                    @click="miniCartOpen = !miniCartOpen"
+                    @click="$dispatch('open-mini-cart')"
                     class="relative group flex items-center"
                     aria-label="<?php esc_attr_e( 'Cart', 'flavor' ); ?>"
                 >
