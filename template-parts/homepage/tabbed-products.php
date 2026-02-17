@@ -56,12 +56,14 @@ $see_all_link = get_theme_mod( 'flavor_tabbed_products_see_all_link', '' );
 	</div>
 
 	<!-- Tabs -->
-	<div class="flex gap-1 overflow-x-auto pb-2 mb-4 border-b border-gray-300 scrollbar-hide">
+	<div class="flex border-b border-gray-200 mb-4 overflow-x-auto scrollbar-hide">
 		<?php foreach ( $tabs as $i => $tab ) : ?>
 			<button @click="switchTab('<?php echo esc_attr( $tab['slug'] ); ?>', <?php echo esc_attr( $tab['cat'] ); ?>)"
-					:class="activeTab === '<?php echo esc_attr( $tab['slug'] ); ?>' ? 'text-primary border-primary' : 'text-gray-500 border-transparent hover:text-gray-700'"
-					class="px-4 py-2 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-colors">
+					class="px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors relative"
+					:class="activeTab === '<?php echo esc_attr( $tab['slug'] ); ?>' ? 'text-primary' : 'text-gray-500 hover:text-gray-700'">
 				<?php echo esc_html( $tab['name'] ); ?>
+				<span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-opacity"
+					  :class="activeTab === '<?php echo esc_attr( $tab['slug'] ); ?>' ? 'opacity-100' : 'opacity-0'"></span>
 			</button>
 		<?php endforeach; ?>
 	</div>

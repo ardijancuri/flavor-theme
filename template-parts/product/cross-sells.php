@@ -32,7 +32,7 @@ if ( empty( $cross_sells ) ) {
 }
 ?>
 
-<div class="mt-8 md:mt-12">
+<div class="mt-8 md:mt-12 mb-12 md:mb-16">
 	<h2 class="text-lg md:text-xl font-bold text-gray-900 mb-4">
 		<?php esc_html_e( 'Customers who bought this also bought', 'flavor' ); ?>
 	</h2>
