@@ -26,6 +26,7 @@ if ( is_wp_error( $product_categories ) ) {
     @toggle-mega-menu.window="open = !open"
     @keydown.escape.window="open = false"
     x-show="open"
+    x-cloak
     @click.outside="open = false"
     x-transition:enter="transition ease-out duration-200"
     x-transition:enter-start="opacity-0 -translate-y-2"
