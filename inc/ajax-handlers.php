@@ -488,3 +488,44 @@ function flavor_get_wishlist_products_handler() {
 }
 add_action( 'wp_ajax_flavor_get_wishlist_products', 'flavor_get_wishlist_products_handler' );
 add_action( 'wp_ajax_nopriv_flavor_get_wishlist_products', 'flavor_get_wishlist_products_handler' );
+
+/**
+ * Live Search — returns matching products as JSON.
+ */
+function flavor_live_search_handler() {
+	$query = isset( $_POST['query'] ) ? sanitize_text_field( wp_unslash( $_POST['query'] ) ) : '';
+
+	if ( strlen( $query ) < 2 ) {
+		wp_send_json_success( array() );
+	}
+
+	$products = new WP_Query( array(
+		'post_type'      => 'product',
+		'post_status'    => 'publish',
+		's'              => $query,
+		'posts_per_page' => 5,
+	) );
+
+	$results = array();
+	if ( $products->have_posts() ) {
+		while ( $products->have_posts() ) {
+			$products->the_post();
+			$product = wc_get_product( get_the_ID() );
+			if ( ! $product ) {
+				continue;
+			}
+			$results[] = array(
+				'id'    => $product->get_id(),
+				'name'  => $product->get_name(),
+				'url'   => get_permalink( $product->get_id() ),
+				'price' => $product->get_price_html(),
+				'image' => wp_get_attachment_image_url( $product->get_image_id(), 'thumbnail' ) ?: wc_placeholder_img_src( 'thumbnail' ),
+			);
+		}
+		wp_reset_postdata();
+	}
+
+	wp_send_json_success( $results );
+}
+add_action( 'wp_ajax_flavor_live_search', 'flavor_live_search_handler' );
+add_action( 'wp_ajax_nopriv_flavor_live_search', 'flavor_live_search_handler' );
