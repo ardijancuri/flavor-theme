@@ -30,8 +30,6 @@ get_header();
 
 		<?php get_template_part( 'template-parts/homepage/popular-categories' ); ?>
 
-		<?php get_template_part( 'template-parts/homepage/brand-logos' ); ?>
-
 	</div>
 
 </main>
