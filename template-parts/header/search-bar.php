@@ -51,7 +51,7 @@ defined( 'ABSPATH' ) || exit;
                         <img :src="item.image" :alt="item.name" class="w-10 h-10 object-cover rounded flex-shrink-0">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-gray-900 truncate" x-text="item.name"></p>
-                            <p class="text-sm text-primary font-semibold" x-html="item.price"></p>
+                            <p class="text-sm text-primary font-semibold [&_del]:no-underline [&_del]:text-gray-400 [&_del]:font-normal [&_del]:mr-1" x-html="item.price"></p>
                         </div>
                     </a>
                 </li>
