@@ -70,9 +70,9 @@ $see_all_link = get_theme_mod( 'flavor_tabbed_products_see_all_link', '' );
 
 	<!-- Skeleton Grid (shown while loading) -->
 	<div x-show="loading" class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
-		<?php for ( $i = 0; $i < 10; $i++ ) : ?>
+		<template x-for="n in skeletonCount" :key="n">
 			<?php get_template_part( 'template-parts/product/product-card-skeleton' ); ?>
-		<?php endfor; ?>
+		</template>
 	</div>
 
 	<!-- Product Grid (AJAX loaded) -->
