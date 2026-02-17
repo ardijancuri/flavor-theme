@@ -27,8 +27,8 @@ $is_ajax = wp_doing_ajax();
 	<?php endif; ?>
 
 	<!-- Toolbar: Tabs + Sort in one row -->
-	<div class="flex items-center justify-between gap-3 border-b border-gray-300">
-		<div class="flex items-center gap-0 overflow-x-auto scrollbar-hide">
+	<div class="flex items-center justify-between gap-3 border-b border-gray-300 overflow-hidden">
+		<div class="flex items-center gap-0 overflow-x-auto overflow-y-hidden scrollbar-hide">
 			<button
 				@click="filterDrawerOpen = true"
 				class="lg:hidden inline-flex items-center gap-2 px-3 py-3 text-sm font-medium text-gray-600 hover:text-primary transition-colors flex-shrink-0"
