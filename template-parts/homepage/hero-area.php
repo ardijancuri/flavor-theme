@@ -141,9 +141,9 @@ if ( is_wp_error( $categories ) ) {
 					<div class="swiper flavor-hero-thumbs mt-2 hidden md:block" id="heroThumbs">
 						<div class="swiper-wrapper">
 							<?php foreach ( $slides as $i => $slide ) : ?>
-								<div class="swiper-slide !w-24 cursor-pointer">
+								<div class="swiper-slide cursor-pointer" style="width:96px !important; flex-shrink:0">
 									<img src="<?php echo esc_url( $slide['img'] ); ?>"
-										 alt="" class="h-14 object-cover rounded opacity-50 transition-all" style="width:96px"
+										 alt="" class="w-full h-14 object-cover rounded opacity-50 transition-all"
 										 loading="lazy">
 								</div>
 							<?php endforeach; ?>
