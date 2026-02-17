@@ -29,7 +29,7 @@ $total     = count( $image_ids );
 	</div>
 	<?php endif; ?>
 
-	<div class="swiper product-gallery-swiper rounded-lg overflow-hidden bg-gray-50" id="product-gallery-main">
+	<div class="swiper product-gallery-swiper js-product-gallery rounded-lg overflow-hidden bg-gray-50" id="product-gallery-main">
 		<div class="swiper-wrapper">
 			<?php foreach ( $image_ids as $index => $img_id ) :
 				$full_url = wp_get_attachment_image_url( $img_id, 'full' );
@@ -59,8 +59,8 @@ $total     = count( $image_ids );
 		</div>
 
 		<?php if ( $total > 1 ) : ?>
-		<div class="swiper-button-prev !text-gray-700 !w-8 !h-8 !bg-white/80 !rounded-full after:!text-xs"></div>
-		<div class="swiper-button-next !text-gray-700 !w-8 !h-8 !bg-white/80 !rounded-full after:!text-xs"></div>
+		<div class="swiper-button-prev js-gallery-prev !text-gray-700 !w-8 !h-8 !bg-white/80 !rounded-full after:!text-xs"></div>
+		<div class="swiper-button-next js-gallery-next !text-gray-700 !w-8 !h-8 !bg-white/80 !rounded-full after:!text-xs"></div>
 		<div class="swiper-pagination !bottom-2"></div>
 		<?php endif; ?>
 	</div>

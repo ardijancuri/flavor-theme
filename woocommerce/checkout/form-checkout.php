@@ -18,7 +18,7 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 <form name="checkout" method="post" class="checkout woocommerce-checkout max-w-5xl mx-auto px-4 py-8"
 	  action="<?php echo esc_url( wc_get_checkout_url() ); ?>"
 	  enctype="multipart/form-data"
-	  x-data="flavorCheckout()">
+	  x-data="checkoutAccordion()"
 
 	<h1 class="text-2xl md:text-3xl font-bold mb-8"><?php esc_html_e( 'Checkout', 'flavor' ); ?></h1>
 
