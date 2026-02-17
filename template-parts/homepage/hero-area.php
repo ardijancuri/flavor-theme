@@ -143,7 +143,7 @@ if ( is_wp_error( $categories ) ) {
 							<?php foreach ( $slides as $i => $slide ) : ?>
 								<div class="swiper-slide !w-24 cursor-pointer">
 									<img src="<?php echo esc_url( $slide['img'] ); ?>"
-										 alt="" class="w-full h-14 object-cover rounded opacity-50 transition-all"
+										 alt="" class="h-14 object-cover rounded opacity-50 transition-all" style="width:96px"
 										 loading="lazy">
 								</div>
 							<?php endforeach; ?>
