@@ -277,4 +277,22 @@ document.addEventListener('alpine:init', () => {
       observer.observe(mainCTA);
     },
   }));
+
+  /* ── Global Wishlist (localStorage) ──────────────────────── */
+
+  Alpine.store('wishlist', {
+    items: JSON.parse(localStorage.getItem('flavor_wishlist') || '[]'),
+    has(id) {
+      return this.items.includes(id);
+    },
+    toggle(id) {
+      const idx = this.items.indexOf(id);
+      if (idx === -1) {
+        this.items.push(id);
+      } else {
+        this.items.splice(idx, 1);
+      }
+      localStorage.setItem('flavor_wishlist', JSON.stringify(this.items));
+    },
+  });
 });

@@ -53,11 +53,12 @@ $stock_status  = $product->get_stock_status();
 
 		<!-- Wishlist button -->
 		<button
-			@click.prevent="$dispatch('toggle-wishlist', { id: <?php echo absint( $product_id ); ?> })"
+			@click.prevent.stop="$store.wishlist.toggle(<?php echo absint( $product_id ); ?>)"
 			class="absolute top-2 right-2 p-1.5 bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-red"
-			aria-label="<?php esc_attr_e( 'Add to wishlist', 'flavor' ); ?>"
+			:class="$store.wishlist.has(<?php echo absint( $product_id ); ?>) && '!opacity-100 text-red'"
+			aria-label="<?php esc_attr_e( 'Toggle wishlist', 'flavor' ); ?>"
 		>
-			<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+			<svg class="w-4 h-4" :fill="$store.wishlist.has(<?php echo absint( $product_id ); ?>) ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
 		</button>
 	</a>
 
