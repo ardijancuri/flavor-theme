@@ -34,6 +34,7 @@ if ( $cat_ids ) {
 		'number'     => 5,
 		'orderby'    => 'count',
 		'order'      => 'DESC',
+		'exclude'    => array( get_option( 'default_product_cat' ) ),
 	) );
 	if ( is_wp_error( $categories ) ) {
 		$categories = array();
