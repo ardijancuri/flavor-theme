@@ -8,22 +8,6 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 
-<script>
-function flavorToasts() {
-    return {
-        toasts: [],
-        addToast(detail) {
-            const id = Date.now();
-            this.toasts.push({ id, message: detail.message, type: detail.type || 'success' });
-            setTimeout(() => this.removeToast(id), 4000);
-        },
-        removeToast(id) {
-            this.toasts = this.toasts.filter(t => t.id !== id);
-        }
-    };
-}
-</script>
-
 <div
     x-data="flavorToasts()"
     @toast.window="addToast($event.detail)"

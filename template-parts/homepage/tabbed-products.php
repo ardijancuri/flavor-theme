@@ -43,7 +43,7 @@ if ( $tab_cats ) {
 $see_all_link = get_theme_mod( 'flavor_tabbed_products_see_all_link', '' );
 ?>
 
-<section class="my-6" x-data="flavorTabbedProducts()" aria-label="<?php echo esc_attr( $section_title ); ?>">
+<section class="my-6" x-data="flavorTabbedProducts({initialTab: 'for-you', initialCat: 0})" aria-label="<?php echo esc_attr( $section_title ); ?>">
 	<!-- Header -->
 	<div class="flex items-center justify-between mb-4">
 		<h2 class="text-lg font-bold text-gray-700"><?php echo esc_html( $section_title ); ?></h2>
@@ -76,41 +76,3 @@ $see_all_link = get_theme_mod( 'flavor_tabbed_products_see_all_link', '' );
 	<!-- Product Grid (AJAX loaded) -->
 	<div x-show="!loading" x-html="productsHtml" class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3"></div>
 </section>
-
-<script>
-function flavorTabbedProducts() {
-	return {
-		activeTab: '<?php echo esc_js( $tabs[0]['slug'] ); ?>',
-		loading: true,
-		productsHtml: '',
-		init() {
-			this.loadProducts(<?php echo esc_js( $tabs[0]['cat'] ); ?>);
-		},
-		switchTab(slug, catId) {
-			if (this.activeTab === slug) return;
-			this.activeTab = slug;
-			this.loadProducts(catId);
-		},
-		loadProducts(catId) {
-			this.loading = true;
-			this.productsHtml = '';
-
-			const data = new FormData();
-			data.append('action', 'flavor_load_products');
-			data.append('nonce', flavorData.nonce);
-			data.append('category', catId);
-			data.append('per_page', 10);
-
-			fetch(flavorData.ajaxUrl, { method: 'POST', body: data })
-				.then(r => r.json())
-				.then(res => {
-					if (res.success) {
-						this.productsHtml = res.data.html;
-					}
-					this.loading = false;
-				})
-				.catch(() => { this.loading = false; });
-		}
-	};
-}
-</script>
