@@ -103,7 +103,7 @@ function flavor_apply_coupon() {
         $totals_html = ob_get_clean();
 
         wp_send_json_success([
-            'message'    => __('Coupon applied successfully.', 'flavor'),
+            'message'     => __('Coupon applied successfully.', 'flavor'),
             'totals_html' => $totals_html,
         ]);
     } else {
@@ -137,7 +137,6 @@ function flavor_toggle_warranty() {
         wp_send_json_error(['message' => __('Cart item not found.', 'flavor')]);
     }
 
-    // Update warranty meta on cart item
     $cart->cart_contents[$key]['flavor_warranty'] = ($warranty === 'yes') ? 'yes' : 'no';
     $cart->calculate_totals();
 
@@ -189,14 +188,13 @@ function flavor_live_search() {
         wp_send_json_success([]);
     }
 
-    $args = [
+    $search = new WP_Query([
         'post_type'      => 'product',
         'post_status'    => 'publish',
         'posts_per_page' => 5,
         's'              => $query,
-    ];
+    ]);
 
-    $search = new WP_Query($args);
     $results = [];
 
     if ($search->have_posts()) {
@@ -304,7 +302,7 @@ function flavor_filter_products() {
         $args['meta_query'][] = $price_meta;
     }
 
-    // Brands taxonomy
+    // Brands
     if (!empty($brands)) {
         $args['tax_query'][] = [
             'taxonomy' => 'product_brand',
@@ -313,7 +311,7 @@ function flavor_filter_products() {
         ];
     }
 
-    // Product attributes
+    // Attributes
     if (!empty($attributes)) {
         foreach ($attributes as $attr) {
             $parts = explode(':', $attr, 2);
@@ -327,7 +325,7 @@ function flavor_filter_products() {
         }
     }
 
-    // Rating filter
+    // Rating
     if ($rating > 0) {
         $args['meta_query'][] = [
             'key'     => '_wc_average_rating',
@@ -337,7 +335,7 @@ function flavor_filter_products() {
         ];
     }
 
-    // Stock filter
+    // Stock
     if ($stock === 'instock') {
         $args['meta_query'][] = [
             'key'   => '_stock_status',
@@ -374,7 +372,7 @@ add_action('wp_ajax_nopriv_flavor_filter_products', 'flavor_filter_products');
 function flavor_quick_filter() {
     check_ajax_referer('flavor_nonce');
 
-    $tab     = sanitize_text_field($_POST['tab'] ?? 'bestseller');
+    $tab      = sanitize_text_field($_POST['tab'] ?? 'bestseller');
     $per_page = absint(get_theme_mod('flavor_products_per_page', 12));
 
     $args = [
