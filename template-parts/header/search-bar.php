@@ -38,6 +38,7 @@ defined( 'ABSPATH' ) || exit;
     <!-- Results Dropdown -->
     <div
         x-show="showResults && results.length > 0"
+        x-cloak
         x-transition:enter="transition ease-out duration-150"
         x-transition:enter-start="opacity-0 -translate-y-1"
         x-transition:enter-end="opacity-100 translate-y-0"
@@ -67,6 +68,7 @@ defined( 'ABSPATH' ) || exit;
     <!-- No results -->
     <div
         x-show="showResults && results.length === 0 && query.length >= 2 && !loading"
+        x-cloak
         class="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-100 p-4 z-50"
     >
         <p class="text-sm text-gray-500 text-center"><?php esc_html_e( 'No products found.', 'flavor' ); ?></p>
