@@ -111,24 +111,46 @@ defined( 'ABSPATH' ) || exit;
 </div>
 
 <script>
-function flavorMiniCartRemove(cartKey) {
+function flavorMiniCartUpdate(action, data) {
 	const fd = new FormData();
-	fd.append('action', 'flavor_mini_cart_remove');
-	fd.append('cart_key', cartKey);
+	fd.append('action', action);
 	fd.append('nonce', (window.flavorData || {}).nonce || '');
+	Object.keys(data).forEach(k => fd.append(k, data[k]));
 	fetch((window.flavorData || {}).ajaxUrl || '/wp-admin/admin-ajax.php', { method: 'POST', body: fd })
 		.then(r => r.json())
-		.then(res => { if (res.success) location.reload(); });
+		.then(res => {
+			if (!res.success) return;
+			var d = res.data;
+			// Update items list
+			var list = document.querySelector('.mini-cart-items ul');
+			if (list && d.html !== undefined) list.innerHTML = d.html;
+			// Update subtotal
+			var totalEl = document.querySelector('.mini-cart-total');
+			if (totalEl && d.total) totalEl.innerHTML = d.total;
+			// Update header cart count badge
+			document.querySelectorAll('.cart-count').forEach(function(el) {
+				el.textContent = d.count || 0;
+				el.classList.toggle('hidden', !d.count);
+			});
+			// Update mini-cart header count
+			var miniCount = document.querySelector('.mini-cart-count');
+			if (miniCount) miniCount.textContent = d.count || 0;
+			// Empty cart — show empty state
+			if (!d.count) {
+				var itemsWrap = document.querySelector('.mini-cart-items');
+				if (itemsWrap) itemsWrap.innerHTML = '<div class="flex flex-col items-center justify-center h-full text-center"><svg class="w-16 h-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg><p class="text-gray-500">Your cart is empty</p></div>';
+			}
+		});
+}
+function flavorMiniCartRemove(cartKey) {
+	var row = document.querySelector('[data-cart-key="' + cartKey + '"]');
+	if (row) { row.style.transition = 'opacity 0.2s, max-height 0.3s'; row.style.opacity = '0'; }
+	setTimeout(function() {
+		flavorMiniCartUpdate('flavor_mini_cart_remove', { cart_key: cartKey });
+	}, 200);
 }
 function flavorMiniCartQty(cartKey, qty) {
 	if (qty < 1) { flavorMiniCartRemove(cartKey); return; }
-	const fd = new FormData();
-	fd.append('action', 'flavor_mini_cart_qty');
-	fd.append('cart_key', cartKey);
-	fd.append('quantity', qty);
-	fd.append('nonce', (window.flavorData || {}).nonce || '');
-	fetch((window.flavorData || {}).ajaxUrl || '/wp-admin/admin-ajax.php', { method: 'POST', body: fd })
-		.then(r => r.json())
-		.then(res => { if (res.success) location.reload(); });
+	flavorMiniCartUpdate('flavor_mini_cart_qty', { cart_key: cartKey, quantity: qty });
 }
 </script>
