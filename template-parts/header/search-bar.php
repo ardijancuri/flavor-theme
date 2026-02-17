@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
             @focus="query.length >= 2 && (showResults = true)"
             placeholder="<?php esc_attr_e( 'Search products...', 'flavor' ); ?>"
             autocomplete="off"
-            class="w-full bg-white rounded-full pl-10 pr-4 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary border border-gray-200"
+            class="w-full bg-white rounded-full pl-10 pr-4 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-transparent border border-gray-200"
         >
         <input type="hidden" name="post_type" value="product">
         <button type="submit" class="absolute left-3 top-1/2 -translate-y-1/2" aria-label="<?php esc_attr_e( 'Search', 'flavor' ); ?>">

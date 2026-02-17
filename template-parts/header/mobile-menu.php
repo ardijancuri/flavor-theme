@@ -70,7 +70,7 @@ if ( is_wp_error( $product_categories ) ) {
                 type="search"
                 name="s"
                 placeholder="<?php esc_attr_e( 'Search products...', 'flavor' ); ?>"
-                class="w-full bg-gray-100 rounded-full pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+                class="w-full bg-gray-100 rounded-full pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0"
             >
             <input type="hidden" name="post_type" value="product">
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

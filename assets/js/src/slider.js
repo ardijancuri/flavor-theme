@@ -51,11 +51,11 @@
 						const img = slide.querySelector('img');
 						if (!img) return;
 						if (i === this.realIndex) {
-							img.classList.add('!border-primary');
-							img.classList.remove('border-transparent');
+							img.classList.remove('opacity-50');
+							img.classList.add('opacity-100');
 						} else {
-							img.classList.remove('!border-primary');
-							img.classList.add('border-transparent');
+							img.classList.remove('opacity-100');
+							img.classList.add('opacity-50');
 						}
 					});
 				},
@@ -66,8 +66,8 @@
 		if (thumbsSwiper && thumbsSwiper.slides[0]) {
 			const img = thumbsSwiper.slides[0].querySelector('img');
 			if (img) {
-				img.classList.add('!border-primary');
-				img.classList.remove('border-transparent');
+				img.classList.remove('opacity-50');
+				img.classList.add('opacity-100');
 			}
 		}
 	}
