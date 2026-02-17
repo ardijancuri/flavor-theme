@@ -529,3 +529,32 @@ function flavor_live_search_handler() {
 }
 add_action( 'wp_ajax_flavor_live_search', 'flavor_live_search_handler' );
 add_action( 'wp_ajax_nopriv_flavor_live_search', 'flavor_live_search_handler' );
+
+/**
+ * Mini Cart — Remove item.
+ */
+function flavor_mini_cart_remove_handler() {
+	$cart_key = isset( $_POST['cart_key'] ) ? sanitize_text_field( $_POST['cart_key'] ) : '';
+	if ( $cart_key && WC()->cart ) {
+		WC()->cart->remove_cart_item( $cart_key );
+		wp_send_json_success();
+	}
+	wp_send_json_error();
+}
+add_action( 'wp_ajax_flavor_mini_cart_remove', 'flavor_mini_cart_remove_handler' );
+add_action( 'wp_ajax_nopriv_flavor_mini_cart_remove', 'flavor_mini_cart_remove_handler' );
+
+/**
+ * Mini Cart — Update item quantity.
+ */
+function flavor_mini_cart_qty_handler() {
+	$cart_key = isset( $_POST['cart_key'] ) ? sanitize_text_field( $_POST['cart_key'] ) : '';
+	$quantity = isset( $_POST['quantity'] ) ? absint( $_POST['quantity'] ) : 1;
+	if ( $cart_key && WC()->cart ) {
+		WC()->cart->set_quantity( $cart_key, $quantity );
+		wp_send_json_success();
+	}
+	wp_send_json_error();
+}
+add_action( 'wp_ajax_flavor_mini_cart_qty', 'flavor_mini_cart_qty_handler' );
+add_action( 'wp_ajax_nopriv_flavor_mini_cart_qty', 'flavor_mini_cart_qty_handler' );

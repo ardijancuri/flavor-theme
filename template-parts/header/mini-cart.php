@@ -109,3 +109,26 @@ defined( 'ABSPATH' ) || exit;
 		<?php endif; ?>
 	</div>
 </div>
+
+<script>
+function flavorMiniCartRemove(cartKey) {
+	const fd = new FormData();
+	fd.append('action', 'flavor_mini_cart_remove');
+	fd.append('cart_key', cartKey);
+	fd.append('nonce', (window.flavorData || {}).nonce || '');
+	fetch((window.flavorData || {}).ajaxUrl || '/wp-admin/admin-ajax.php', { method: 'POST', body: fd })
+		.then(r => r.json())
+		.then(res => { if (res.success) location.reload(); });
+}
+function flavorMiniCartQty(cartKey, qty) {
+	if (qty < 1) { flavorMiniCartRemove(cartKey); return; }
+	const fd = new FormData();
+	fd.append('action', 'flavor_mini_cart_qty');
+	fd.append('cart_key', cartKey);
+	fd.append('quantity', qty);
+	fd.append('nonce', (window.flavorData || {}).nonce || '');
+	fetch((window.flavorData || {}).ajaxUrl || '/wp-admin/admin-ajax.php', { method: 'POST', body: fd })
+		.then(r => r.json())
+		.then(res => { if (res.success) location.reload(); });
+}
+</script>
