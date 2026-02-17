@@ -23,8 +23,11 @@ function flavor_enqueue_assets() {
     // GLightbox CSS.
     wp_enqueue_style( 'glightbox', 'https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css', array(), null );
 
+    // Alpine.js component definitions (must load BEFORE Alpine).
+    wp_enqueue_script( 'flavor-alpine-components', FLAVOR_URI . '/assets/js/src/alpine-components.js', array(), FLAVOR_VERSION, true );
+
     // Alpine.js (defer).
-    wp_enqueue_script( 'alpinejs-collapse', 'https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3/dist/cdn.min.js', array(), null, true );
+    wp_enqueue_script( 'alpinejs-collapse', 'https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3/dist/cdn.min.js', array( 'flavor-alpine-components' ), null, true );
     wp_enqueue_script( 'alpinejs', 'https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', array( 'alpinejs-collapse' ), null, true );
 
     // Swiper JS.
@@ -40,7 +43,7 @@ function flavor_enqueue_assets() {
     // Conditional scripts.
     if ( is_front_page() ) {
         wp_enqueue_script( 'flavor-slider', FLAVOR_URI . '/assets/js/src/slider.js', array( 'swiper' ), FLAVOR_VERSION, true );
-        wp_enqueue_script( 'flavor-products', FLAVOR_URI . '/assets/js/src/products.js', array(), FLAVOR_VERSION, true );
+        wp_enqueue_script( 'flavor-products', FLAVOR_URI . '/assets/js/src/products.js', array( 'flavor-app' ), FLAVOR_VERSION, true );
     }
 
     if ( function_exists( 'is_product' ) && is_product() ) {

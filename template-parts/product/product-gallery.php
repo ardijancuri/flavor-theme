@@ -37,7 +37,7 @@ $total     = count( $image_ids );
 				$alt      = get_post_meta( $img_id, '_wp_attachment_image_alt', true ) ?: $product->get_name();
 			?>
 			<div class="swiper-slide">
-				<a href="<?php echo esc_url( $full_url ); ?>" class="glightbox" data-gallery="product-gallery">
+				<a href="<?php echo esc_url( $full_url ); ?>" class="glightbox js-gallery-lightbox" data-gallery="product-gallery">
 					<img
 						<?php if ( $index === 0 ) : ?>
 							src="<?php echo esc_url( $med_url ); ?>"
@@ -67,7 +67,7 @@ $total     = count( $image_ids );
 
 	<?php if ( $total > 1 ) : ?>
 	<div class="hidden md:block mt-3">
-		<div class="swiper product-gallery-thumbs" id="product-gallery-thumbs">
+		<div class="swiper product-gallery-thumbs js-product-thumbs" id="product-gallery-thumbs">
 			<div class="swiper-wrapper">
 				<?php foreach ( $image_ids as $img_id ) :
 					$thumb_url = wp_get_attachment_image_url( $img_id, 'thumbnail' );
@@ -81,3 +81,39 @@ $total     = count( $image_ids );
 	</div>
 	<?php endif; ?>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	if (typeof Swiper === 'undefined') return;
+	var mainEl = document.querySelector('.product-gallery-swiper');
+	if (!mainEl || mainEl.swiper) return;
+
+	var thumbsEl = document.querySelector('.product-gallery-thumbs');
+	var thumbsSwiper = null;
+	if (thumbsEl && !thumbsEl.swiper) {
+		thumbsSwiper = new Swiper(thumbsEl, {
+			spaceBetween: 8,
+			slidesPerView: 4,
+			freeMode: true,
+			watchSlidesProgress: true,
+		});
+	}
+
+	var mainSwiper = new Swiper(mainEl, {
+		spaceBetween: 0,
+		lazy: true,
+		pagination: { el: '.swiper-pagination', clickable: true },
+		navigation: {
+			nextEl: '.js-gallery-next',
+			prevEl: '.js-gallery-prev',
+		},
+		thumbs: thumbsSwiper ? { swiper: thumbsSwiper } : undefined,
+		on: {
+			slideChange: function() {
+				var el = document.querySelector('[x-data]');
+				if (el && el.__x) el.__x.$data.currentSlide = this.activeIndex + 1;
+			}
+		}
+	});
+});
+</script>

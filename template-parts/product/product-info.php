@@ -92,49 +92,70 @@ $warranty_yrs  = get_post_meta( $product->get_id(), '_flavor_warranty_years', tr
 
 	<!-- Add to Cart -->
 	<?php if ( $product->is_in_stock() ) : ?>
-		<div class="space-y-3" id="flavor-main-cta">
+		<form method="post" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" class="space-y-3 js-product-add-to-cart" id="flavor-main-cta">
 			<div class="flex items-center gap-3">
 				<!-- Qty -->
-				<div class="flex items-center border border-gray-300 rounded-lg overflow-hidden" x-data>
-					<button @click="$dispatch('qty-change', -1)" class="px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors" type="button" aria-label="<?php esc_attr_e( 'Decrease quantity', 'flavor' ); ?>">
+				<div class="flex items-center border border-gray-300 rounded-lg overflow-hidden js-qty-wrapper">
+					<button type="button" class="js-qty-btn px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors" data-dir="minus" aria-label="<?php esc_attr_e( 'Decrease quantity', 'flavor' ); ?>">
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M5 12h14"/></svg>
 					</button>
-					<input type="number" x-model.number="qty" min="1" class="w-12 text-center border-x border-gray-300 py-2 text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" aria-label="<?php esc_attr_e( 'Quantity', 'flavor' ); ?>">
-					<button @click="$dispatch('qty-change', 1)" class="px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors" type="button" aria-label="<?php esc_attr_e( 'Increase quantity', 'flavor' ); ?>">
+					<input type="number" name="quantity" value="1" min="1" max="<?php echo esc_attr( $stock_qty ?: 99 ); ?>" data-max="<?php echo esc_attr( $stock_qty ?: 99 ); ?>" class="js-qty-input w-12 text-center border-x border-gray-300 py-2 text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" aria-label="<?php esc_attr_e( 'Quantity', 'flavor' ); ?>">
+					<button type="button" class="js-qty-btn px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors" data-dir="plus" aria-label="<?php esc_attr_e( 'Increase quantity', 'flavor' ); ?>">
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M12 5v14m-7-7h14"/></svg>
 					</button>
 				</div>
 
+				<?php do_action( 'woocommerce_before_add_to_cart_button' ); ?>
+
 				<!-- Add to Cart button -->
-				<button
-					@click="addToCart()"
-					:disabled="adding"
-					class="flex-1 bg-primary text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-				>
-					<svg x-show="adding" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-					<svg x-show="!adding" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
-					<span x-text="adding ? '<?php esc_attr_e( 'Adding…', 'flavor' ); ?>' : '<?php esc_attr_e( 'Add to Cart', 'flavor' ); ?>'"></span>
+				<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>" class="flex-1 bg-primary text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2">
+					<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
+					<?php esc_html_e( 'Add to Cart', 'flavor' ); ?>
 				</button>
 			</div>
 
-			<!-- Buy Now -->
-			<button
-				@click="buyNow()"
-				class="w-full border border-primary text-primary font-semibold py-3 px-6 rounded-lg hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
-			>
-				<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-				<?php esc_html_e( 'Buy Now', 'flavor' ); ?>
-			</button>
-		</div>
+			<?php do_action( 'woocommerce_after_add_to_cart_button' ); ?>
+		</form>
 	<?php endif; ?>
 
 	<!-- Wishlist -->
-	<button
-		@click="wishlisted = !wishlisted"
-		class="flex items-center gap-2 text-sm text-gray-500 hover:text-red-500 transition-colors"
-		:class="wishlisted && 'text-red-500'"
-	>
-		<svg class="w-5 h-5" :fill="wishlisted ? 'currentColor' : 'none'" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-		<span x-text="wishlisted ? '<?php esc_attr_e( 'In wishlist', 'flavor' ); ?>' : '<?php esc_attr_e( 'Add to wishlist', 'flavor' ); ?>'"></span>
+	<button type="button" class="wishlist-toggle flex items-center gap-2 text-sm text-gray-500 hover:text-red-500 transition-colors"
+		onclick="toggleWishlist(<?php echo esc_attr( $product->get_id() ); ?>, this)">
+		<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+		<span><?php esc_html_e( 'Add to wishlist', 'flavor' ); ?></span>
 	</button>
 </div>
+
+<script>
+function toggleWishlist(productId, btn) {
+	var key = 'flavor_wishlist';
+	var list = JSON.parse(localStorage.getItem(key) || '[]');
+	var idx = list.indexOf(productId);
+	var svg = btn.querySelector('svg');
+	var span = btn.querySelector('span');
+	if (idx === -1) {
+		list.push(productId);
+		svg.setAttribute('fill', 'currentColor');
+		btn.classList.add('text-red-500');
+		span.textContent = '<?php echo esc_js( __( 'In wishlist', 'flavor' ) ); ?>';
+	} else {
+		list.splice(idx, 1);
+		svg.setAttribute('fill', 'none');
+		btn.classList.remove('text-red-500');
+		span.textContent = '<?php echo esc_js( __( 'Add to wishlist', 'flavor' ) ); ?>';
+	}
+	localStorage.setItem(key, JSON.stringify(list));
+}
+(function() {
+	var id = <?php echo absint( $product->get_id() ); ?>;
+	var list = JSON.parse(localStorage.getItem('flavor_wishlist') || '[]');
+	if (list.indexOf(id) !== -1) {
+		var btn = document.querySelector('.wishlist-toggle');
+		if (btn) {
+			btn.querySelector('svg').setAttribute('fill', 'currentColor');
+			btn.classList.add('text-red-500');
+			btn.querySelector('span').textContent = '<?php echo esc_js( __( 'In wishlist', 'flavor' ) ); ?>';
+		}
+	}
+})();
+</script>

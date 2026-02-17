@@ -93,7 +93,30 @@ $stock_status  = $product->get_stock_status();
 		<!-- Quick add to cart -->
 		<?php if ( $product->is_purchasable() && $product->is_in_stock() && $product->is_type( 'simple' ) ) : ?>
 		<button
-			@click.prevent="addToCart(<?php echo absint( $product_id ); ?>, $el)"
+			@click.prevent="
+				const btn = $el;
+				btn.disabled = true;
+				btn.textContent = '<?php esc_attr_e( 'Adding…', 'flavor' ); ?>';
+				const fd = new FormData();
+				fd.append('action', 'flavor_add_to_cart');
+				fd.append('nonce', (window.flavorData || {}).nonce || '');
+				fd.append('product_id', <?php echo absint( $product_id ); ?>);
+				fd.append('quantity', 1);
+				fetch((window.flavorData || {}).ajaxUrl || '/wp-admin/admin-ajax.php', { method: 'POST', body: fd })
+					.then(r => r.json())
+					.then(res => {
+						btn.disabled = false;
+						btn.textContent = '<?php esc_attr_e( 'Add to Cart', 'flavor' ); ?>';
+						if (res.success) {
+							window.dispatchEvent(new CustomEvent('toast', { detail: { message: '<?php esc_attr_e( 'Added to cart!', 'flavor' ); ?>', type: 'success' } }));
+							const c = document.querySelector('.cart-count');
+							if (c && res.data.cart_count) { c.textContent = res.data.cart_count; c.classList.remove('hidden'); }
+							document.dispatchEvent(new Event('added_to_cart'));
+						} else {
+							window.dispatchEvent(new CustomEvent('toast', { detail: { message: res.data?.message || 'Error', type: 'error' } }));
+						}
+					}).catch(() => { btn.disabled = false; btn.textContent = '<?php esc_attr_e( 'Add to Cart', 'flavor' ); ?>'; });
+			"
 			class="mt-2 w-full py-1.5 text-xs font-medium border border-primary text-primary rounded hover:bg-primary hover:text-white transition-colors"
 		>
 			<?php esc_html_e( 'Add to Cart', 'flavor' ); ?>

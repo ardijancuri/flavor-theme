@@ -31,14 +31,15 @@
 		}
 
 		// Send AJAX request
-		if (typeof flavorAjax === 'undefined') return;
+		const ajax = window.flavorAjax || window.flavorData;
+		if (!ajax) return;
 
 		const data = new FormData();
 		data.append('action', 'flavor_toggle_wishlist');
-		data.append('nonce', flavorAjax.nonce);
+		data.append('nonce', ajax.nonce);
 		data.append('product_id', productId);
 
-		fetch(flavorAjax.url, { method: 'POST', body: data }).catch(() => {
+		fetch(ajax.url || ajax.ajaxUrl, { method: 'POST', body: data }).catch(() => {
 			// Revert on error
 			if (isFilled) {
 				icon.setAttribute('fill', 'currentColor');

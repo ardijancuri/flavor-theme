@@ -11,12 +11,16 @@ function refreshMiniCart() {
     const miniCart = document.querySelector('.mini-cart-contents');
     if (!miniCart) return;
 
-    fetch(flavorAjax.ajaxUrl, {
+    const ajax = window.flavorAjax || window.flavorData || {};
+    const ajaxUrl = ajax.url || ajax.ajaxUrl;
+    if (!ajaxUrl) return;
+
+    fetch(ajaxUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
             action: 'flavor_get_mini_cart',
-            nonce: flavorAjax.nonce,
+            nonce: ajax.nonce || '',
         }),
     })
         .then((res) => res.text())
