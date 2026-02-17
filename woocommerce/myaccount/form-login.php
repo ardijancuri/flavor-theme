@@ -46,7 +46,7 @@ $registration_enabled = 'yes' === get_option( 'woocommerce_enable_myaccount_regi
                     </label>
                     <input type="text" id="username" name="username" autocomplete="username"
                            value="<?php echo isset( $_POST['username'] ) ? esc_attr( wp_unslash( $_POST['username'] ) ) : ''; ?>"
-                           class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--color-primary,#E15726)] focus:ring-[var(--color-primary,#E15726)]" required />
+                           class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-white focus:outline-none transition-colors" required />
                 </div>
 
                 <div>
@@ -54,7 +54,7 @@ $registration_enabled = 'yes' === get_option( 'woocommerce_enable_myaccount_regi
                         <?php esc_html_e( 'Password', 'flavor' ); ?> <span class="text-red-500">*</span>
                     </label>
                     <input type="password" id="password" name="password" autocomplete="current-password"
-                           class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--color-primary,#E15726)] focus:ring-[var(--color-primary,#E15726)]" required />
+                           class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-white focus:outline-none transition-colors" required />
                 </div>
 
                 <?php do_action( 'woocommerce_login_form' ); ?>
@@ -62,7 +62,7 @@ $registration_enabled = 'yes' === get_option( 'woocommerce_enable_myaccount_regi
                 <div class="flex items-center justify-between">
                     <label class="flex items-center gap-2">
                         <input type="checkbox" name="rememberme" value="forever"
-                               class="rounded border-gray-300 text-[var(--color-primary,#E15726)] focus:ring-[var(--color-primary,#E15726)]" />
+                               class="rounded border-gray-300 text-primary focus:ring-primary" />
                         <span class="text-sm text-gray-600"><?php esc_html_e( 'Remember me', 'flavor' ); ?></span>
                     </label>
                     <a href="<?php echo esc_url( wp_lostpassword_url() ); ?>" class="text-sm text-[var(--color-primary,#E15726)] hover:underline">
@@ -98,7 +98,7 @@ $registration_enabled = 'yes' === get_option( 'woocommerce_enable_myaccount_regi
                             </label>
                             <input type="text" id="reg_username" name="username" autocomplete="username"
                                    value="<?php echo isset( $_POST['username'] ) ? esc_attr( wp_unslash( $_POST['username'] ) ) : ''; ?>"
-                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--color-primary,#E15726)] focus:ring-[var(--color-primary,#E15726)]" required />
+                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-white focus:outline-none transition-colors" required />
                         </div>
                     <?php endif; ?>
 
@@ -108,7 +108,7 @@ $registration_enabled = 'yes' === get_option( 'woocommerce_enable_myaccount_regi
                         </label>
                         <input type="email" id="reg_email" name="email" autocomplete="email"
                                value="<?php echo isset( $_POST['email'] ) ? esc_attr( wp_unslash( $_POST['email'] ) ) : ''; ?>"
-                               class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--color-primary,#E15726)] focus:ring-[var(--color-primary,#E15726)]" required />
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-white focus:outline-none transition-colors" required />
                     </div>
 
                     <?php if ( 'no' === get_option( 'woocommerce_registration_generate_password' ) ) : ?>
@@ -117,7 +117,7 @@ $registration_enabled = 'yes' === get_option( 'woocommerce_enable_myaccount_regi
                                 <?php esc_html_e( 'Password', 'flavor' ); ?> <span class="text-red-500">*</span>
                             </label>
                             <input type="password" id="reg_password" name="password" autocomplete="new-password"
-                                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-[var(--color-primary,#E15726)] focus:ring-[var(--color-primary,#E15726)]" required />
+                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-50 text-sm text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:bg-white focus:outline-none transition-colors" required />
                         </div>
                     <?php endif; ?>
 
