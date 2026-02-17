@@ -68,17 +68,19 @@ $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalin
                         </svg>
                         <span class="cart-count absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center <?php echo $cart_count > 0 ? '' : 'hidden'; ?>"><?php echo esc_html( $cart_count ); ?></span>
                     </button>
-                    <!-- Add to cart notification -->
+                    <!-- Add to cart toast -->
                     <div x-show="cartMsg" x-cloak
                          x-transition:enter="transition ease-out duration-200"
-                         x-transition:enter-start="opacity-0 -translate-y-1"
-                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
                          x-transition:leave="transition ease-in duration-150"
-                         x-transition:leave-start="opacity-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 -translate-y-1"
-                         class="absolute top-full right-0 mt-2 px-4 py-2.5 bg-primary text-white text-sm font-medium rounded-lg shadow-lg whitespace-nowrap z-50">
-                        <span x-text="cartMsg"></span>
-                        <div class="absolute -top-1.5 right-3 w-3 h-3 bg-primary rotate-45"></div>
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         class="absolute top-full left-1/2 -translate-x-1/2 mt-3 z-50">
+                        <div class="flex items-center gap-2 px-4 py-2 bg-white text-gray-800 text-xs font-medium rounded-lg shadow-xl border border-gray-200 whitespace-nowrap">
+                            <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            <span x-text="cartMsg"></span>
+                        </div>
                     </div>
                 </div>
 
