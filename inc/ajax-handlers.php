@@ -451,13 +451,40 @@ function flavor_toggle_wishlist_handler() {
 add_action( 'wp_ajax_flavor_toggle_wishlist', 'flavor_toggle_wishlist_handler' );
 add_action( 'wp_ajax_nopriv_flavor_toggle_wishlist', 'flavor_toggle_wishlist_handler' );
 
+// flavorAjax is merged into flavorData (see inc/enqueue.php).
+
 /**
- * Localize AJAX data for frontend
+ * Get wishlist products HTML by IDs
  */
-function flavor_ajax_localize_scripts() {
-	wp_localize_script( 'flavor-app', 'flavorAjax', array(
-		'url'   => admin_url( 'admin-ajax.php' ),
-		'nonce' => wp_create_nonce( 'flavor_ajax_nonce' ),
-	) );
+function flavor_get_wishlist_products_handler() {
+	check_ajax_referer( 'flavor_ajax_nonce', 'nonce' );
+
+	$ids = isset( $_POST['product_ids'] ) ? array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_POST['product_ids'] ) ) ) ) ) : array();
+
+	if ( empty( $ids ) ) {
+		wp_send_json_success( array( 'html' => '' ) );
+	}
+
+	$args = array(
+		'post_type'      => 'product',
+		'post_status'    => 'publish',
+		'post__in'       => $ids,
+		'posts_per_page' => count( $ids ),
+		'orderby'        => 'post__in',
+	);
+
+	$query = new WP_Query( $args );
+
+	ob_start();
+	while ( $query->have_posts() ) {
+		$query->the_post();
+		$GLOBALS['product'] = wc_get_product( get_the_ID() );
+		get_template_part( 'template-parts/product/product-card' );
+	}
+	$html = ob_get_clean();
+	wp_reset_postdata();
+
+	wp_send_json_success( array( 'html' => $html ) );
 }
-add_action( 'wp_enqueue_scripts', 'flavor_ajax_localize_scripts', 20 );
+add_action( 'wp_ajax_flavor_get_wishlist_products', 'flavor_get_wishlist_products_handler' );
+add_action( 'wp_ajax_nopriv_flavor_get_wishlist_products', 'flavor_get_wishlist_products_handler' );

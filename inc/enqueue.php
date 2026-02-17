@@ -30,6 +30,15 @@ function flavor_enqueue_assets() {
     wp_enqueue_script( 'alpinejs-collapse', 'https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3/dist/cdn.min.js', array( 'flavor-alpine-components' ), null, true );
     wp_enqueue_script( 'alpinejs', 'https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js', array( 'alpinejs-collapse' ), null, true );
 
+    // Localize data early so alpine:init callbacks can access it.
+    wp_localize_script( 'flavor-alpine-components', 'flavorData', array(
+        'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+        'nonce'       => wp_create_nonce( 'flavor_ajax_nonce' ),
+        'homeUrl'     => home_url( '/' ),
+        'cartUrl'     => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : '',
+        'checkoutUrl' => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : '',
+    ) );
+
     // Swiper JS.
     wp_enqueue_script( 'swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', array(), null, true );
 
@@ -62,19 +71,7 @@ function flavor_enqueue_assets() {
         wp_enqueue_script( 'flavor-checkout', FLAVOR_URI . '/assets/js/src/checkout.js', array(), FLAVOR_VERSION, true );
     }
 
-    // Localize.
-    $localize_data = array(
-        'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
-        'nonce'       => wp_create_nonce( 'flavor_ajax_nonce' ),
-        'homeUrl'     => home_url( '/' ),
-    );
-
-    if ( function_exists( 'wc_get_cart_url' ) ) {
-        $localize_data['cartUrl']     = wc_get_cart_url();
-        $localize_data['checkoutUrl'] = wc_get_checkout_url();
-    }
-
-    wp_localize_script( 'flavor-app', 'flavorData', $localize_data );
+    // flavorData is already localized on flavor-alpine-components above.
 }
 add_action( 'wp_enqueue_scripts', 'flavor_enqueue_assets' );
 
@@ -86,7 +83,7 @@ add_action( 'wp_enqueue_scripts', 'flavor_enqueue_assets' );
  * @return string
  */
 function flavor_defer_alpine( $tag, $handle ) {
-    if ( in_array( $handle, array( 'alpinejs', 'alpinejs-collapse' ), true ) ) {
+    if ( in_array( $handle, array( 'alpinejs', 'alpinejs-collapse', 'flavor-alpine-components' ), true ) ) {
         return str_replace( ' src', ' defer src', $tag );
     }
     return $tag;
@@ -97,6 +94,7 @@ add_filter( 'script_loader_tag', 'flavor_defer_alpine', 10, 2 );
  * Preload Inter font.
  */
 function flavor_preload_fonts() {
+    echo '<style>[x-cloak]{display:none!important}</style>' . "\n";
     echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
     echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
 }
