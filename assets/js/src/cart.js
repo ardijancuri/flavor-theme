@@ -10,8 +10,6 @@
 
   const { ajaxUrl, nonce } = window.flavorData || {};
 
-  /* ── Helpers ─────────────────────────────────────────────── */
-
   function post(action, body = {}) {
     const fd = new FormData();
     fd.append('action', action);

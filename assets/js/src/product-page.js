@@ -16,7 +16,6 @@
     if (!mainEl) return;
 
     let thumbsSwiper = null;
-
     if (thumbsEl) {
       thumbsSwiper = new Swiper(thumbsEl, {
         spaceBetween: 8,
@@ -26,7 +25,7 @@
       });
     }
 
-    const mainSwiper = new Swiper(mainEl, {
+    new Swiper(mainEl, {
       spaceBetween: 0,
       navigation: {
         nextEl: '.js-gallery-next',
@@ -34,8 +33,6 @@
       },
       thumbs: thumbsSwiper ? { swiper: thumbsSwiper } : undefined,
     });
-
-    return mainSwiper;
   }
 
   /* ── GLightbox ───────────────────────────────────────────── */
@@ -63,19 +60,14 @@
 
     let qty = parseInt(input.value, 10) || 1;
     const max = parseInt(input.dataset.max, 10) || 9999;
-    const min = 1;
 
-    if (btn.dataset.dir === 'plus') {
-      qty = Math.min(qty + 1, max);
-    } else {
-      qty = Math.max(qty - 1, min);
-    }
+    qty = btn.dataset.dir === 'plus' ? Math.min(qty + 1, max) : Math.max(qty - 1, 1);
 
     input.value = qty;
     input.dispatchEvent(new Event('change', { bubbles: true }));
   });
 
-  /* ── Tabs (Desktop) / Accordion (Mobile) ─────────────────── */
+  /* ── Tabs / Accordion (Alpine) ───────────────────────────── */
 
   document.addEventListener('alpine:init', () => {
     Alpine.data('productTabs', () => ({
@@ -83,9 +75,7 @@
       isMobile: window.innerWidth < 810,
 
       init() {
-        this._onResize = () => {
-          this.isMobile = window.innerWidth < 810;
-        };
+        this._onResize = () => { this.isMobile = window.innerWidth < 810; };
         window.addEventListener('resize', this._onResize);
       },
 
@@ -95,7 +85,6 @@
 
       setTab(id) {
         if (this.isMobile && this.activeTab === id) {
-          // Accordion: toggle closed
           this.activeTab = '';
         } else {
           this.activeTab = id;
@@ -106,8 +95,6 @@
         return this.activeTab === id;
       },
     }));
-
-    /* ── Warranty Toggle ─────────────────────────────────── */
 
     Alpine.data('warrantyToggle', () => ({
       warranty: false,
@@ -141,15 +128,11 @@
     const price = parseFloat(el.dataset.price) || 0;
     if (price <= 0) return;
 
-    const months = [24, 36];
     const container = el.querySelector('.js-installment-values');
     if (!container) return;
 
-    container.innerHTML = months
-      .map((m) => {
-        const monthly = (price / m).toFixed(2);
-        return `<span class="installment-option">${m}× <strong>${monthly}</strong></span>`;
-      })
+    container.innerHTML = [24, 36]
+      .map((m) => `<span class="installment-option">${m}× <strong>${(price / m).toFixed(2)}</strong></span>`)
       .join('');
   }
 
@@ -158,16 +141,12 @@
   function initStickyBar() {
     const mainCTA = document.querySelector('.js-product-add-to-cart');
     const stickyBar = document.querySelector('.js-sticky-atc-bar');
-
     if (!mainCTA || !stickyBar) return;
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        stickyBar.classList.toggle('is-visible', !entry.isIntersecting);
-      },
+      ([entry]) => { stickyBar.classList.toggle('is-visible', !entry.isIntersecting); },
       { threshold: 0 }
     );
-
     observer.observe(mainCTA);
   }
 

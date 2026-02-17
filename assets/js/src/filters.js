@@ -10,8 +10,6 @@
 
   const { ajaxUrl, nonce } = window.flavorData || {};
 
-  /* ── Helpers ─────────────────────────────────────────────── */
-
   function post(action, body = {}) {
     const fd = new FormData();
     fd.append('action', action);
@@ -38,8 +36,6 @@
     };
   }
 
-  /* ── State ───────────────────────────────────────────────── */
-
   const state = {
     price_min: '',
     price_max: '',
@@ -55,14 +51,14 @@
   const chipsContainer = document.querySelector('.js-filter-chips');
   const countEl = document.querySelector('.js-product-count');
 
-  /* ── Read initial state from URL ─────────────────────────── */
+  /* ── URL State ───────────────────────────────────────────── */
 
   function readURL() {
     const p = new URLSearchParams(window.location.search);
     state.price_min = p.get('price_min') || '';
     state.price_max = p.get('price_max') || '';
-    state.brands = p.getAll('brands[]').length ? p.getAll('brands[]') : p.get('brands')?.split(',').filter(Boolean) || [];
-    state.attributes = p.getAll('attributes[]').length ? p.getAll('attributes[]') : p.get('attributes')?.split(',').filter(Boolean) || [];
+    state.brands = p.getAll('brands[]').length ? p.getAll('brands[]') : (p.get('brands') || '').split(',').filter(Boolean);
+    state.attributes = p.getAll('attributes[]').length ? p.getAll('attributes[]') : (p.get('attributes') || '').split(',').filter(Boolean);
     state.rating = p.get('rating') || '';
     state.stock = p.get('stock') || '';
     state.orderby = p.get('orderby') || '';
@@ -81,8 +77,7 @@
     if (state.page > 1) p.set('page', state.page);
 
     const qs = p.toString();
-    const url = window.location.pathname + (qs ? '?' + qs : '');
-    history.pushState(state, '', url);
+    history.pushState(state, '', window.location.pathname + (qs ? '?' + qs : ''));
   }
 
   /* ── Fetch Products ──────────────────────────────────────── */
@@ -92,10 +87,7 @@
 
     grid.classList.add('is-loading');
     grid.setAttribute('aria-busy', 'true');
-
-    // Show skeleton placeholders
-    const skeletonCount = 12;
-    grid.innerHTML = Array.from({ length: skeletonCount }, () => '<div class="product-card product-card--skeleton"></div>').join('');
+    grid.innerHTML = Array.from({ length: 12 }, () => '<div class="product-card product-card--skeleton"></div>').join('');
 
     if (updateURL) pushURL();
 
@@ -107,12 +99,8 @@
         grid.innerHTML = res.data.html;
         if (countEl) countEl.textContent = res.data.total;
         renderChips();
-
-        // Load more button
         const loadMoreBtn = document.querySelector('.js-load-more');
-        if (loadMoreBtn) {
-          loadMoreBtn.hidden = !res.data.has_more;
-        }
+        if (loadMoreBtn) loadMoreBtn.hidden = !res.data.has_more;
       } else {
         toast(res.data?.message || 'Could not load products.', 'error');
       }
@@ -126,34 +114,27 @@
     let html = '';
 
     if (state.price_min || state.price_max) {
-      const label = `${state.price_min || '0'} – ${state.price_max || '∞'}`;
-      html += `<button class="filter-chip js-chip-remove" data-filter="price">${label} <span aria-hidden="true">×</span></button>`;
+      html += `<button class="filter-chip js-chip-remove" data-filter="price">${state.price_min || '0'} – ${state.price_max || '∞'} <span aria-hidden="true">×</span></button>`;
     }
-
     state.brands.forEach((b) => {
       html += `<button class="filter-chip js-chip-remove" data-filter="brand" data-value="${b}">${b} <span aria-hidden="true">×</span></button>`;
     });
-
     state.attributes.forEach((a) => {
       html += `<button class="filter-chip js-chip-remove" data-filter="attribute" data-value="${a}">${a} <span aria-hidden="true">×</span></button>`;
     });
-
     if (state.rating) {
       html += `<button class="filter-chip js-chip-remove" data-filter="rating">${state.rating}★+ <span aria-hidden="true">×</span></button>`;
     }
-
     if (state.stock) {
       html += `<button class="filter-chip js-chip-remove" data-filter="stock">In Stock <span aria-hidden="true">×</span></button>`;
     }
-
     if (html) {
       html += '<button class="filter-chip filter-chip--clear js-clear-all">Clear all <span aria-hidden="true">×</span></button>';
     }
-
     chipsContainer.innerHTML = html;
   }
 
-  /* ── Collect Filters from DOM ────────────────────────────── */
+  /* ── Collect Filters ─────────────────────────────────────── */
 
   function collectFilters() {
     const priceMin = document.querySelector('.js-filter-price-min');
@@ -176,9 +157,8 @@
     state.page = 1;
   }
 
-  /* ── Event Listeners ─────────────────────────────────────── */
+  /* ── Events ──────────────────────────────────────────────── */
 
-  // Filter drawer open/close via Alpine events
   window.addEventListener('filter-drawer-open', () => {
     const drawer = document.querySelector('.js-filter-drawer');
     if (drawer) drawer.classList.add('is-open');
@@ -191,19 +171,15 @@
     document.body.classList.remove('has-drawer-open');
   });
 
-  // Price range (debounced)
   const debouncedFetch = debounce(() => {
     collectFilters();
     fetchProducts();
   }, 500);
 
   document.addEventListener('input', (e) => {
-    if (e.target.matches('.js-filter-price-min, .js-filter-price-max')) {
-      debouncedFetch();
-    }
+    if (e.target.matches('.js-filter-price-min, .js-filter-price-max')) debouncedFetch();
   });
 
-  // Checkbox filters (brand, attribute, rating, stock)
   document.addEventListener('change', (e) => {
     if (e.target.matches('.js-filter-brand, .js-filter-attr, .js-filter-rating, .js-filter-stock, .js-filter-orderby')) {
       collectFilters();
@@ -216,8 +192,7 @@
     if (!e.target.matches('.js-brand-search')) return;
     const query = e.target.value.toLowerCase();
     document.querySelectorAll('.js-brand-item').forEach((item) => {
-      const name = (item.textContent || '').toLowerCase();
-      item.hidden = !name.includes(query);
+      item.hidden = !(item.textContent || '').toLowerCase().includes(query);
     });
   });
 
@@ -260,7 +235,6 @@
   // Clear all
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.js-clear-all')) return;
-
     state.price_min = '';
     state.price_max = '';
     state.brands = [];
@@ -269,7 +243,6 @@
     state.stock = '';
     state.page = 1;
 
-    // Reset DOM inputs
     document.querySelectorAll('.js-filter-brand, .js-filter-attr, .js-filter-rating, .js-filter-stock').forEach((cb) => (cb.checked = false));
     const minEl = document.querySelector('.js-filter-price-min');
     const maxEl = document.querySelector('.js-filter-price-max');
@@ -279,7 +252,6 @@
     fetchProducts();
   });
 
-  // Popstate (back/forward)
   window.addEventListener('popstate', () => {
     readURL();
     fetchProducts(false);

@@ -10,8 +10,6 @@
 
   const { ajaxUrl, nonce } = window.flavorData || {};
 
-  /* ── Helpers ─────────────────────────────────────────────── */
-
   function post(action, body = {}) {
     const fd = new FormData();
     fd.append('action', action);
@@ -86,16 +84,12 @@
       },
     }));
 
-    /* ── Alpine: Business Invoice Toggle ─────────────────── */
-
     Alpine.data('businessInvoice', () => ({
       showBusiness: false,
       toggle() {
         this.showBusiness = !this.showBusiness;
       },
     }));
-
-    /* ── Alpine: Order Notes Toggle ──────────────────────── */
 
     Alpine.data('orderNotes', () => ({
       showNotes: false,
@@ -108,7 +102,6 @@
   /* ── Payment Method Switching ────────────────────────────── */
 
   document.addEventListener('click', (e) => {
-    // Payment group click
     const group = e.target.closest('.js-payment-group');
     if (group) {
       document.querySelectorAll('.js-payment-group').forEach((g) => g.classList.remove('is-active'));
@@ -117,14 +110,12 @@
       const methodsContainer = group.querySelector('.js-payment-methods');
       if (methodsContainer) methodsContainer.hidden = false;
 
-      // Hide other groups' methods
       document.querySelectorAll('.js-payment-group:not(.is-active) .js-payment-methods').forEach((m) => {
         m.hidden = true;
       });
       return;
     }
 
-    // Individual payment method click
     const method = e.target.closest('.js-payment-method');
     if (method) {
       document.querySelectorAll('.js-payment-method').forEach((m) => m.classList.remove('is-selected'));
@@ -145,7 +136,6 @@
         }
       });
 
-      // Set hidden input
       const hiddenInput = document.querySelector('input[name="payment_method"]');
       if (hiddenInput) hiddenInput.value = methodId;
     }
@@ -163,10 +153,9 @@
     container.querySelectorAll('.js-address-card').forEach((c) => c.classList.remove('is-selected'));
     card.classList.add('is-selected');
 
-    // Fill hidden fields from card data attributes
     const data = card.dataset;
     const fields = ['first_name', 'last_name', 'address_1', 'address_2', 'city', 'state', 'postcode', 'country', 'phone', 'email'];
-    const prefix = container.dataset.prefix || 'billing'; // billing or shipping
+    const prefix = container.dataset.prefix || 'billing';
 
     fields.forEach((field) => {
       const input = document.querySelector(`[name="${prefix}_${field}"]`);
@@ -209,7 +198,6 @@
     const stepId = btn.dataset.step;
     if (!stepId) return;
 
-    // Dispatch to Alpine accordion
     const accordionEl = document.querySelector('[x-data*="checkoutAccordion"]');
     if (accordionEl && accordionEl.__x) {
       accordionEl.__x.$data.completeStep(stepId);
