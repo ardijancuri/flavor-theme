@@ -109,7 +109,7 @@ $stock_status  = $product->get_stock_status();
 						btn.disabled = false;
 						btn.textContent = '<?php esc_attr_e( 'Add to Cart', 'flavor' ); ?>';
 						if (res.success) {
-							window.dispatchEvent(new CustomEvent('toast', { detail: { message: '<?php esc_attr_e( 'Added to cart!', 'flavor' ); ?>', type: 'success' } }));
+							window.dispatchEvent(new CustomEvent('cart-added', { detail: { message: '<?php esc_attr_e( 'Added to cart!', 'flavor' ); ?>' } }));
 							const c = document.querySelector('.cart-count');
 							if (c && res.data.cart_count) { c.textContent = res.data.cart_count; c.classList.remove('hidden'); }
 							document.dispatchEvent(new Event('added_to_cart'));

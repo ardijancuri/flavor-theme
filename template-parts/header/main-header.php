@@ -56,16 +56,31 @@ $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalin
                 </a>
 
                 <!-- Cart -->
-                <button
-                    @click="$dispatch('open-mini-cart')"
-                    class="relative group flex items-center"
-                    aria-label="<?php esc_attr_e( 'Cart', 'flavor' ); ?>"
-                >
-                    <svg class="w-5 h-5 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <span class="cart-count absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center <?php echo $cart_count > 0 ? '' : 'hidden'; ?>"><?php echo esc_html( $cart_count ); ?></span>
-                </button>
+                <div class="relative" x-data="{ cartMsg: '', cartTimer: null }"
+                     @cart-added.window="cartMsg = $event.detail.message || '<?php echo esc_js( __( 'Added to cart!', 'flavor' ) ); ?>'; clearTimeout(cartTimer); cartTimer = setTimeout(() => cartMsg = '', 3000)">
+                    <button
+                        @click="$dispatch('open-mini-cart')"
+                        class="relative group flex items-center"
+                        aria-label="<?php esc_attr_e( 'Cart', 'flavor' ); ?>"
+                    >
+                        <svg class="w-5 h-5 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="cart-count absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center <?php echo $cart_count > 0 ? '' : 'hidden'; ?>"><?php echo esc_html( $cart_count ); ?></span>
+                    </button>
+                    <!-- Add to cart notification -->
+                    <div x-show="cartMsg" x-cloak
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 -translate-y-1"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 -translate-y-1"
+                         class="absolute top-full right-0 mt-2 px-4 py-2.5 bg-primary text-white text-sm font-medium rounded-lg shadow-lg whitespace-nowrap z-50">
+                        <span x-text="cartMsg"></span>
+                        <div class="absolute -top-1.5 right-3 w-3 h-3 bg-primary rotate-45"></div>
+                    </div>
+                </div>
 
                 <!-- User / Login -->
                 <a href="<?php echo esc_url( $account_url ); ?>" class="group flex items-center gap-1">

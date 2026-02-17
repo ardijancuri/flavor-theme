@@ -174,7 +174,7 @@ document.addEventListener('alpine:init', () => {
           if (redirect) {
             window.location.href = (window.flavorData || {}).checkoutUrl || '/checkout/';
           } else {
-            window.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Added to cart!', type: 'success' } }));
+            window.dispatchEvent(new CustomEvent('cart-added', { detail: { message: 'Added to cart!' } }));
             window.dispatchEvent(new CustomEvent('open-mini-cart'));
           }
         } else {
