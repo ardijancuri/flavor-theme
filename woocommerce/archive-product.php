@@ -26,20 +26,37 @@ $is_ajax = wp_doing_ajax();
 		</h1>
 	<?php endif; ?>
 
-	<?php get_template_part( 'template-parts/shop/quick-filter-tabs' ); ?>
-
-	<!-- Toolbar -->
-	<div class="flex items-center justify-between gap-3 py-3 border-b border-gray-300">
-		<button
-			@click="filterDrawerOpen = true"
-			class="lg:hidden inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:border-primary transition-colors"
-		>
-			<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-			<?php esc_html_e( 'Filters', 'flavor' ); ?>
-			<span x-show="activeFilterCount > 0" x-text="activeFilterCount" class="bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"></span>
-		</button>
-
-		<?php get_template_part( 'template-parts/shop/sort-dropdown' ); ?>
+	<!-- Toolbar: Tabs + Sort in one row -->
+	<div class="flex items-center justify-between gap-3 border-b border-gray-300">
+		<div class="flex items-center gap-0 overflow-x-auto scrollbar-hide">
+			<button
+				@click="filterDrawerOpen = true"
+				class="lg:hidden inline-flex items-center gap-2 px-3 py-3 text-sm font-medium text-gray-600 hover:text-primary transition-colors flex-shrink-0"
+			>
+				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+				<?php esc_html_e( 'Filters', 'flavor' ); ?>
+				<span x-show="activeFilterCount > 0" x-cloak x-text="activeFilterCount" class="bg-primary text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"></span>
+			</button>
+			<?php
+			$tabs = array(
+				''            => __( 'All products', 'flavor' ),
+				'bestsellers' => __( 'Best sellers', 'flavor' ),
+				'most_viewed' => __( 'Most viewed', 'flavor' ),
+				'top_rated'   => __( 'Top rated', 'flavor' ),
+			);
+			foreach ( $tabs as $key => $label ) : ?>
+				<button
+					@click="quickFilter = '<?php echo esc_js( $key ); ?>'"
+					:class="quickFilter === '<?php echo esc_js( $key ); ?>' ? 'border-primary text-primary font-semibold' : 'border-transparent text-gray-600 hover:text-gray-700'"
+					class="px-4 py-3 text-sm whitespace-nowrap border-b-2 -mb-px transition-colors flex-shrink-0"
+				>
+					<?php echo esc_html( $label ); ?>
+				</button>
+			<?php endforeach; ?>
+		</div>
+		<div class="flex-shrink-0">
+			<?php get_template_part( 'template-parts/shop/sort-dropdown' ); ?>
+		</div>
 	</div>
 
 	<!-- Mobile filter drawer -->

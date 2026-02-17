@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<!-- Product grid -->
 	<div
 		id="flavor-product-grid"
-		class="grid grid-cols-2 tablet-sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3"
+		class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3"
 		x-ref="productGrid"
 	>
 		<?php
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<!-- Skeleton placeholders -->
 	<template x-if="loading">
-		<div class="grid grid-cols-2 tablet-sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3 mt-3">
+		<div class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3 mt-3">
 			<template x-for="i in 8" :key="i">
 				<div class="animate-pulse">
 					<div class="bg-gray-300 rounded-lg aspect-square mb-2"></div>
