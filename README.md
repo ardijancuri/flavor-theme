@@ -6,7 +6,7 @@ A modern, customizable theme framework.
 
 | Service | URL                       |
 |---------|---------------------------|
-| Demo    | http://187.77.82.137:8080 |
+| Demo    | <a href="http://187.77.82.137:8080" target="_blank">http://187.77.82.137:8080</a> |
 
 ## Development
 
