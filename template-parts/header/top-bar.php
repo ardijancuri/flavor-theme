@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$topbar_text = get_theme_mod( 'flavor_topbar_text', esc_html__( 'Free shipping on orders over €50!', 'flavor' ) );
+$topbar_text = get_theme_mod( 'flavor_topbar_text', esc_html__( 'Free shipping over €50', 'flavor' ) );
 ?>
 
 <div
