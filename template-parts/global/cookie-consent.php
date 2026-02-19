@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
     x-transition:leave-start="translate-y-0 opacity-100"
     x-transition:leave-end="translate-y-full opacity-0"
     x-cloak
-    class="fixed bottom-16 lg:bottom-0 left-0 right-0 z-50 text-white px-4 py-3" style="background-color: #333333;"
+    class="fixed left-0 right-0 z-50 text-white px-4 py-3 lg:bottom-0" style="background-color: #1a1a1a; bottom: 3.5rem;"
 >
     <div class="container-site flex flex-col sm:flex-row items-center justify-between gap-3">
         <p class="text-sm text-gray-300">
