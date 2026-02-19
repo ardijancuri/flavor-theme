@@ -31,5 +31,18 @@ defined( 'ABSPATH' ) || exit;
 <?php get_template_part( 'template-parts/global/scroll-to-top' ); ?>
 
 <?php wp_footer(); ?>
+<script>
+(function(){
+  var nav = document.querySelector('nav[aria-label]');
+  if(!nav || window.innerWidth >= 1024) return;
+  if(window.visualViewport){
+    function pin(){
+      nav.style.bottom = (window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop) + 'px';
+    }
+    window.visualViewport.addEventListener('resize', pin);
+    window.visualViewport.addEventListener('scroll', pin);
+  }
+})();
+</script>
 </body>
 </html>
