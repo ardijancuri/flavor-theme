@@ -16,7 +16,7 @@ $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalin
 $cart_count  = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_contents_count() : 0;
 ?>
 
-<nav class="w-full z-40 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)] border-t border-gray-200 lg:hidden" style="position: fixed; bottom: 0; left: 0; right: 0; -webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0); -webkit-backface-visibility: hidden; backface-visibility: hidden;" aria-label="<?php esc_attr_e( 'Mobile navigation', 'flavor' ); ?>">
+<nav class="w-full z-40 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)] border-t border-gray-200 lg:hidden" style="position: fixed; bottom: 0; left: 0; right: 0; -webkit-transform: translate3d(0,0,0); transform: translate3d(0,0,0); -webkit-backface-visibility: hidden; backface-visibility: hidden; padding-bottom: env(safe-area-inset-bottom, 0px);" aria-label="<?php esc_attr_e( 'Mobile navigation', 'flavor' ); ?>">
     <div class="flex items-center justify-around h-14">
         <!-- Home -->
         <a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex flex-col items-center gap-0.5 text-xs <?php echo is_front_page() ? 'text-primary' : 'text-gray-500'; ?>">

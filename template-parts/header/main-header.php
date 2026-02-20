@@ -11,7 +11,7 @@ $cart_count = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_conte
 $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : '#';
 ?>
 
-<header class="bg-black-dark sticky top-0 z-30">
+<header class="bg-black-dark sticky top-0 z-50">
     <div class="container-site">
         <!-- Mobile Layout: h-[110px] with flex-wrap -->
         <div class="flex flex-wrap items-center justify-between h-[110px] md:h-16 py-2 md:py-0">

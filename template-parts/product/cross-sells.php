@@ -49,8 +49,8 @@ if ( empty( $cross_sells ) ) {
 				</div>
 			<?php endforeach; wp_reset_postdata(); ?>
 		</div>
-		<div class="swiper-button-prev cross-sells-prev"></div>
-		<div class="swiper-button-next cross-sells-next"></div>
+		<div class="swiper-button-prev cross-sells-prev" style="color:#4b5563;"></div>
+		<div class="swiper-button-next cross-sells-next" style="color:#4b5563;"></div>
 	</div>
 
 	<script>

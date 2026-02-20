@@ -11,15 +11,11 @@ $topbar_text = get_theme_mod( 'flavor_topbar_text', esc_html__( 'Free shipping o
 ?>
 
 <div
-    x-data="{ show: !localStorage.getItem('topbar_dismissed') }"
+    x-data="{ show: !localStorage.getItem('topbar_dismissed'), scrolled: false }"
+    x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 10 }, { passive: true })"
     x-show="show"
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="opacity-0 -translate-y-full"
-    x-transition:enter-end="opacity-100 translate-y-0"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="opacity-100 translate-y-0"
-    x-transition:leave-end="opacity-0 -translate-y-full"
-    class="bg-[#2C2C2C] text-white text-xs relative z-40"
+    class="bg-[#2C2C2C] text-white text-xs relative z-40 overflow-hidden transition-all duration-300"
+    :style="scrolled ? 'max-height:0; opacity:0;' : 'max-height:3rem; opacity:1;'"
 >
     <div class="container-site flex items-center justify-start tablet-sm:justify-center py-2 px-4">
         <!-- Megaphone Icon -->
