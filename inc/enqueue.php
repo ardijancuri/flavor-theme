@@ -76,6 +76,189 @@ function flavor_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'flavor_enqueue_assets' );
 
 /**
+ * Add targeted CSS overrides that depend on WordPress-generated markup.
+ */
+function flavor_enqueue_inline_overrides() {
+    $logo_scale_mobile         = max( 60, min( 160, absint( get_theme_mod( 'flavor_logo_scale_mobile', 100 ) ) ) );
+    $logo_scale_desktop        = max( 60, min( 160, absint( get_theme_mod( 'flavor_logo_scale_desktop', 100 ) ) ) );
+    $footer_logo_scale_mobile  = max( 60, min( 160, absint( get_theme_mod( 'flavor_footer_logo_scale_mobile', 100 ) ) ) );
+    $footer_logo_scale_desktop = max( 60, min( 160, absint( get_theme_mod( 'flavor_footer_logo_scale_desktop', 100 ) ) ) );
+
+    $logo_width_mobile    = (int) round( 110 * ( $logo_scale_mobile / 100 ) );
+    $logo_height_mobile   = (int) round( 32 * ( $logo_scale_mobile / 100 ) );
+    $logo_width_desktop   = (int) round( 132 * ( $logo_scale_desktop / 100 ) );
+    $logo_height_desktop  = (int) round( 40 * ( $logo_scale_desktop / 100 ) );
+    $footer_logo_height_mobile  = (int) round( 32 * ( $footer_logo_scale_mobile / 100 ) );
+    $footer_logo_height_desktop = (int) round( 40 * ( $footer_logo_scale_desktop / 100 ) );
+
+    $css = '
+:root {
+    --flavor-logo-width-mobile: ' . $logo_width_mobile . 'px;
+    --flavor-logo-height-mobile: ' . $logo_height_mobile . 'px;
+    --flavor-logo-width-desktop: ' . $logo_width_desktop . 'px;
+    --flavor-logo-height-desktop: ' . $logo_height_desktop . 'px;
+    --flavor-footer-logo-height-mobile: ' . $footer_logo_height_mobile . 'px;
+    --flavor-footer-logo-height-desktop: ' . $footer_logo_height_desktop . 'px;
+}
+
+.site-shell {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.site-footer {
+    margin-top: auto;
+    width: 100%;
+}
+
+.site-header-branding {
+    width: var(--flavor-logo-width-mobile);
+    height: var(--flavor-logo-height-mobile);
+    min-width: var(--flavor-logo-width-mobile);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+@media (min-width: 768px) {
+    .site-header-branding {
+        width: var(--flavor-logo-width-desktop);
+        height: var(--flavor-logo-height-desktop);
+        min-width: var(--flavor-logo-width-desktop);
+    }
+}
+
+.site-header-branding .custom-logo-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    line-height: 0;
+}
+
+.site-header-branding .custom-logo {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.site-footer-branding {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    max-width: 140px;
+}
+
+.site-footer-branding-image {
+    display: block;
+    width: auto;
+    height: var(--flavor-footer-logo-height-mobile);
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.site-footer-inner {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 768px) {
+    .site-footer-branding {
+        max-width: 180px;
+    }
+
+    .site-footer-branding-image {
+        height: var(--flavor-footer-logo-height-desktop);
+    }
+}
+
+@media (min-width: 810px) {
+    .site-footer-inner {
+        padding-bottom: 2.5rem;
+    }
+}
+
+.product-card-price del {
+    margin-right: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 400;
+    color: #6B7280;
+    text-decoration: line-through;
+}
+
+.product-card-price ins {
+    color: #252525;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.product-card-price .price-decimals {
+    font-size: 0.56em;
+    line-height: 1;
+    position: relative;
+    top: 0.22em;
+    vertical-align: baseline;
+}
+
+.product-single-price .price-decimals,
+.product-single-sticky-price .price-decimals {
+    font-size: 0.5em;
+    line-height: 1;
+    position: relative;
+    top: 0.24em;
+    vertical-align: baseline;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart__submit .wc-block-cart__submit-button.wc-block-components-button,
+.wp-block-woocommerce-cart .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button.wc-block-cart__submit-button {
+    background-color: var(--color-primary, #E15726) !important;
+    border: 1px solid var(--color-primary, #E15726) !important;
+    color: #ffffff !important;
+    border-radius: 0.75rem;
+    box-shadow: none;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart__submit .wc-block-cart__submit-button.wc-block-components-button:hover,
+.wp-block-woocommerce-cart .wc-block-cart__submit .wc-block-cart__submit-button.wc-block-components-button:focus,
+.wp-block-woocommerce-cart .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button.wc-block-cart__submit-button:hover,
+.wp-block-woocommerce-cart .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button.wc-block-cart__submit-button:focus {
+    background-color: var(--color-primary-hover, var(--color-primary, #E15726)) !important;
+    border-color: var(--color-primary-hover, var(--color-primary, #E15726)) !important;
+    color: #ffffff !important;
+    opacity: 1;
+}
+
+.wp-block-woocommerce-cart .wc-block-cart__submit .wc-block-cart__submit-button .wc-block-components-button__text,
+.wp-block-woocommerce-cart .wp-block-woocommerce-proceed-to-checkout-block .wc-block-components-button.wc-block-cart__submit-button .wc-block-components-button__text {
+    color: inherit;
+}
+';
+
+    wp_add_inline_style( 'flavor-style', $css );
+}
+add_action( 'wp_enqueue_scripts', 'flavor_enqueue_inline_overrides', 25 );
+
+/**
+ * Enable live preview for Customizer-only sizing controls.
+ */
+function flavor_enqueue_customizer_preview_assets() {
+    wp_enqueue_script(
+        'flavor-customizer-preview',
+        FLAVOR_URI . '/assets/js/src/customizer-preview.js',
+        array( 'customize-preview' ),
+        FLAVOR_VERSION,
+        true
+    );
+}
+add_action( 'customize_preview_init', 'flavor_enqueue_customizer_preview_assets' );
+
+/**
  * Add defer attribute to Alpine.js scripts.
  *
  * @param string $tag    Script HTML tag.

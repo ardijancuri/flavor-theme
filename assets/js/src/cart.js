@@ -23,13 +23,9 @@
   }
 
   function refreshMiniCart() {
-    post('flavor_mini_cart_fragments').then((res) => {
-      if (!res.success) return;
-      const el = document.querySelector('.js-mini-cart-contents');
-      if (el) el.innerHTML = res.data.html;
-      const countEl = document.querySelector('.js-mini-cart-count');
-      if (countEl) countEl.textContent = res.data.count ?? '';
-    });
+    if (typeof window.flavorRefreshMiniCart === 'function') {
+      window.flavorRefreshMiniCart();
+    }
   }
 
   function updateCartTotals(html) {

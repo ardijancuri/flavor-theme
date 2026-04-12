@@ -8,9 +8,9 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 
-<footer class="bg-black-dark text-white mt-auto">
-    <div class="container-site py-10">
-        <div class="grid grid-cols-1 tablet-sm:grid-cols-2 lg:grid-cols-4 gap-8">
+<footer class="site-footer bg-black-dark text-white mt-auto">
+    <div class="site-footer-inner container-site py-8 md:py-10">
+        <div class="grid grid-cols-1 tablet-sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             <?php get_template_part( 'template-parts/footer/column', 'brand' ); ?>
             <?php get_template_part( 'template-parts/footer/column', 'account' ); ?>
             <?php get_template_part( 'template-parts/footer/column', 'faq' ); ?>
@@ -20,8 +20,10 @@ defined( 'ABSPATH' ) || exit;
 
     <?php get_template_part( 'template-parts/footer/ecosystem' ); ?>
 
-    <div class="text-center text-xs text-gray-500 py-4 border-t border-gray-700">
-        &copy; <?php echo date( 'Y' ); ?> <?php bloginfo( 'name' ); ?>. <?php esc_html_e( 'All rights reserved.', 'flavor' ); ?>
+    <div class="py-4 text-center text-xs text-white">
+        &copy; <?php echo esc_html( date( 'Y' ) ); ?> <?php bloginfo( 'name' ); ?>.
+        <?php esc_html_e( 'Powered by', 'flavor' ); ?>
+        <a href="https://oninova.net" target="_blank" rel="noopener noreferrer" class="underline hover:no-underline">Oninova</a>
     </div>
 </footer>
 

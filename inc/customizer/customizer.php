@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // Load customizer sections
 $customizer_files = array(
+	'colors',
 	'header',
 	'footer',
 	'homepage',

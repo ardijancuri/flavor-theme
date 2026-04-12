@@ -8,6 +8,70 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Display store prices without decimals.
+ *
+ * @return int
+ */
+function flavor_price_decimals() {
+    return 0;
+}
+add_filter( 'wc_get_price_decimals', 'flavor_price_decimals' );
+add_filter( 'woocommerce_price_num_decimals', 'flavor_price_decimals' );
+
+/**
+ * Remove decimal digits from already-rendered price HTML.
+ *
+ * This keeps theme output consistent even when a price string was generated
+ * before WooCommerce applied the decimal setting we want.
+ *
+ * @param string $price_html Rendered WooCommerce price HTML.
+ * @return string
+ */
+function flavor_strip_price_html_decimals( $price_html ) {
+    if ( ! is_string( $price_html ) || '' === trim( $price_html ) ) {
+        return $price_html;
+    }
+
+    if ( absint( wc_get_price_decimals() ) > 0 ) {
+        return $price_html;
+    }
+
+    $decimal_separator = wc_get_price_decimal_separator();
+    if ( '' === $decimal_separator ) {
+        return $price_html;
+    }
+
+    $pattern = '/' . preg_quote( $decimal_separator, '/' ) . '\d+(?=(?:&nbsp;|&#160;|\s|<|$))/u';
+
+    return preg_replace( $pattern, '', $price_html );
+}
+
+/**
+ * Strip decimals from wc_price() output.
+ *
+ * @param string $price_html Rendered price HTML.
+ * @return string
+ */
+function flavor_filter_wc_price_html( $price_html ) {
+    return flavor_strip_price_html_decimals( $price_html );
+}
+add_filter( 'wc_price', 'flavor_filter_wc_price_html', 20 );
+
+/**
+ * Strip decimals from product price HTML.
+ *
+ * @param string     $price_html Rendered price HTML.
+ * @param WC_Product $product    Product instance.
+ * @return string
+ */
+function flavor_filter_product_price_html( $price_html, $product ) {
+    unset( $product );
+
+    return flavor_strip_price_html_decimals( $price_html );
+}
+add_filter( 'woocommerce_get_price_html', 'flavor_filter_product_price_html', 20, 2 );
+
+/**
  * Display breadcrumbs via template part.
  */
 function flavor_breadcrumbs() {
@@ -84,4 +148,32 @@ function flavor_wishlist_count( $user_id = null ) {
     }
 
     return 0;
+}
+
+/**
+ * Wrap decimal digits in a smaller inline span for selected price displays.
+ *
+ * @param string $price_html Rendered WooCommerce price HTML.
+ * @return string
+ */
+function flavor_price_html_with_small_decimals( $price_html ) {
+    if ( ! is_string( $price_html ) || '' === trim( $price_html ) ) {
+        return $price_html;
+    }
+
+    $decimals = absint( wc_get_price_decimals() );
+    if ( 0 === $decimals ) {
+        return flavor_strip_price_html_decimals( $price_html );
+    }
+
+    $decimal_separator = wc_get_price_decimal_separator();
+    $pattern           = '/(\d+)' . preg_quote( $decimal_separator, '/' ) . '(\d{' . $decimals . '})(?!\d)/u';
+
+    return preg_replace_callback(
+        $pattern,
+        static function ( $matches ) use ( $decimal_separator ) {
+            return $matches[1] . '<span class="price-decimals">' . $decimal_separator . $matches[2] . '</span>';
+        },
+        $price_html
+    );
 }

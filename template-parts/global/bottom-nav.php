@@ -38,9 +38,7 @@ $cart_count  = function_exists( 'WC' ) && WC()->cart ? WC()->cart->get_cart_cont
         <a href="<?php echo esc_url( $cart_url ); ?>" class="relative flex flex-col items-center gap-0.5 text-xs <?php echo is_cart() ? 'text-primary' : 'text-gray-500'; ?>">
             <span class="relative">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
-                <?php if ( $cart_count > 0 ) : ?>
-                    <span class="absolute -top-1.5 -right-1.5 bg-primary text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center cart-count"><?php echo esc_html( $cart_count ); ?></span>
-                <?php endif; ?>
+                <span class="absolute -top-1.5 -right-1.5 bg-primary text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center cart-count <?php echo $cart_count > 0 ? '' : 'hidden'; ?>"><?php echo esc_html( $cart_count ); ?></span>
             </span>
             <span><?php esc_html_e( 'Cart', 'flavor' ); ?></span>
         </a>

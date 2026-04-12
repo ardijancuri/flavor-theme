@@ -18,7 +18,7 @@ get_header();
 
 	<div x-data="wishlistPage()" x-cloak>
 		<!-- Loading -->
-		<div x-show="loading" class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
+		<div x-show="loading" class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
 			<?php for ( $i = 0; $i < 5; $i++ ) : ?>
 				<div class="bg-gray-100 rounded-lg animate-pulse h-64"></div>
 			<?php endfor; ?>
@@ -37,7 +37,7 @@ get_header();
 
 		<!-- Products Grid -->
 		<div x-show="!loading && ids.length > 0" x-html="productsHtml"
-			 class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3"></div>
+			 class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4"></div>
 	</div>
 </main>
 

@@ -14,9 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 
 $is_ajax = wp_doing_ajax();
+$total_products = isset( $GLOBALS['wp_query']->found_posts ) ? (int) $GLOBALS['wp_query']->found_posts : 0;
 ?>
 
-<div class="max-w-site-xxl mx-auto px-3 md:px-4" x-data="shopPage()">
+<div class="max-w-site-xxl mx-auto px-3 md:px-4" x-data="shopPage({ totalProducts: <?php echo esc_attr( $total_products ); ?> })">
 
 	<?php get_template_part( 'template-parts/global/breadcrumbs' ); ?>
 
