@@ -212,7 +212,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 				</div>
 
 				<a href="<?php echo esc_url( wc_get_checkout_url() ); ?>"
-					class="mt-6 w-full block text-center bg-[var(--color-primary,#E15726)] text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity">
+					class="mt-6 w-full block text-center bg-primary text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity">
 					<?php esc_html_e( 'Proceed to Checkout', 'flavor' ); ?>
 				</a>
 
@@ -229,7 +229,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 			<span class="font-bold text-[var(--color-primary,#E15726)]"><?php wc_cart_totals_order_total_html(); ?></span>
 		</div>
 		<a href="<?php echo esc_url( wc_get_checkout_url() ); ?>"
-			class="w-full block text-center bg-[var(--color-primary,#E15726)] text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity">
+			class="w-full block text-center bg-primary text-white font-semibold py-3.5 rounded-xl hover:opacity-90 transition-opacity">
 			<?php esc_html_e( 'Checkout', 'flavor' ); ?>
 		</a>
 	</div>

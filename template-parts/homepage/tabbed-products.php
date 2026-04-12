@@ -70,6 +70,6 @@ $see_all_link = get_theme_mod( 'flavor_tabbed_products_see_all_link', '' );
 
 	<!-- Product Grid (AJAX loaded) -->
 	<div x-html="productsHtml"
-		 class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3 transition-opacity duration-300"
+		 class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 transition-opacity duration-300"
 		 :class="loading ? 'opacity-0' : 'opacity-100'"></div>
 </section>

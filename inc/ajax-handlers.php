@@ -275,6 +275,8 @@ function flavor_add_to_cart_handler() {
 		wp_send_json_success( array(
 			'cart_hash'  => WC()->cart->get_cart_hash(),
 			'cart_count' => WC()->cart->get_cart_contents_count(),
+			'mini_cart'  => flavor_mini_cart_response(),
+			'notices'    => $notices,
 			'fragments'  => apply_filters( 'woocommerce_add_to_cart_fragments', array(
 				'div.widget_shopping_cart_content' => '<div class="widget_shopping_cart_content">' . $mini_cart . '</div>',
 			) ),
@@ -344,9 +346,15 @@ function flavor_load_products_handler() {
 				continue;
 			}
 
-			$regular = (float) $product->get_regular_price();
-			$sale    = (float) $product->get_sale_price();
-			$price   = (float) $product->get_price();
+			if ( $product->is_type( 'variable' ) ) {
+				$regular = (float) $product->get_variation_regular_price( 'min', false );
+				$sale    = $product->is_on_sale() ? (float) $product->get_variation_sale_price( 'min', false ) : 0;
+				$price   = (float) $product->get_variation_price( 'min', false );
+			} else {
+				$regular = (float) $product->get_regular_price();
+				$sale    = (float) $product->get_sale_price();
+				$price   = (float) $product->get_price();
+			}
 			$discount = ( $regular > 0 && $sale ) ? round( ( ( $regular - $sale ) / $regular ) * 100 ) : 0;
 
 			$products[] = array(
@@ -354,8 +362,9 @@ function flavor_load_products_handler() {
 				'name'          => $product->get_name(),
 				'url'           => $product->get_permalink(),
 				'image'         => wp_get_attachment_image_url( $product->get_image_id(), 'flavor-product-card' ) ?: wc_placeholder_img_src(),
-				'regular_price' => number_format( $regular, 2, ',', '.' ),
-				'sale_price'    => number_format( $price, 2, ',', '.' ),
+				'regular_price' => number_format_i18n( round( $regular ), 0 ),
+				'sale_price'    => number_format_i18n( round( $price ), 0 ),
+				'price_html'    => wp_kses_post( $product->get_price_html() ),
 				'discount'      => $discount,
 			);
 		}
@@ -384,17 +393,20 @@ add_action( 'wp_ajax_nopriv_flavor_load_products', 'flavor_load_products_handler
 function flavor_load_more_products_handler() {
 	check_ajax_referer( 'flavor_ajax_nonce', 'nonce' );
 
-	$page     = absint( $_POST['page'] ?? 1 );
+	$page     = max( 1, absint( $_POST['page'] ?? 1 ) );
 	$per_page = absint( $_POST['per_page'] ?? 10 );
 	$per_page = min( $per_page, 20 );
 
 	$args = array(
-		'post_type'      => 'product',
-		'post_status'    => 'publish',
-		'posts_per_page' => $per_page,
-		'paged'          => $page,
-		'orderby'        => 'date',
-		'order'          => 'DESC',
+		'post_type'           => 'product',
+		'post_status'         => 'publish',
+		'posts_per_page'      => $per_page,
+		'paged'               => $page,
+		'ignore_sticky_posts' => true,
+		'orderby'             => array(
+			'date' => 'DESC',
+			'ID'   => 'DESC',
+		),
 	);
 
 	$query = new WP_Query( $args );
@@ -406,9 +418,15 @@ function flavor_load_more_products_handler() {
 		get_template_part( 'template-parts/product/product-card' );
 	}
 	$html = ob_get_clean();
+	$has_more = $query->max_num_pages > $page;
 	wp_reset_postdata();
 
-	wp_send_json_success( array( 'html' => $html ) );
+	wp_send_json_success( array(
+		'html'         => $html,
+		'has_more'     => $has_more,
+		'current_page' => $page,
+		'max_pages'    => (int) $query->max_num_pages,
+	) );
 }
 add_action( 'wp_ajax_flavor_load_more_products', 'flavor_load_more_products_handler' );
 add_action( 'wp_ajax_nopriv_flavor_load_more_products', 'flavor_load_more_products_handler' );
@@ -531,21 +549,45 @@ add_action( 'wp_ajax_flavor_live_search', 'flavor_live_search_handler' );
 add_action( 'wp_ajax_nopriv_flavor_live_search', 'flavor_live_search_handler' );
 
 /**
- * Mini Cart — Remove item.
+ * Helper — render mini-cart empty state.
+ *
+ * @return string
  */
+function flavor_get_mini_cart_empty_html() {
+	ob_start();
+	?>
+	<div class="flex flex-col items-center justify-center h-full text-center">
+		<svg class="w-16 h-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+		</svg>
+		<p class="text-gray-500"><?php esc_html_e( 'Your cart is empty', 'flavor' ); ?></p>
+	</div>
+	<?php
+
+	return ob_get_clean();
+}
+
 /**
- * Helper — get mini cart response data.
+ * Helper — render mini-cart line items.
+ *
+ * @return string
  */
-function flavor_mini_cart_response() {
-	WC()->cart->calculate_totals();
+function flavor_get_mini_cart_list_items_html() {
+	if ( ! WC()->cart ) {
+		return '';
+	}
+
 	ob_start();
 	foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
 		$_product = $cart_item['data'];
-		if ( ! $_product || ! $_product->exists() || $cart_item['quantity'] <= 0 ) continue;
+
+		if ( ! $_product || ! $_product->exists() || $cart_item['quantity'] <= 0 ) {
+			continue;
+		}
 		?>
 		<li class="flex gap-3 pb-4 border-b border-gray-100" data-cart-key="<?php echo esc_attr( $cart_item_key ); ?>">
 			<div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-				<?php echo $_product->get_image( array( 64, 64 ), array( 'class' => 'w-full h-full object-cover' ) ); ?>
+				<?php echo $_product->get_image( array( 64, 64 ), array( 'class' => 'w-full h-full object-cover' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</div>
 			<div class="flex-1 min-w-0">
 				<h4 class="text-sm font-medium text-gray-900 truncate">
@@ -553,22 +595,18 @@ function flavor_mini_cart_response() {
 						<?php echo esc_html( $_product->get_name() ); ?>
 					</a>
 				</h4>
-				<p class="text-sm text-gray-500 mt-0.5"><?php echo WC()->cart->get_product_price( $_product ); ?></p>
+				<p class="text-sm text-gray-500 mt-0.5"><?php echo WC()->cart->get_product_price( $_product ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
 				<div class="flex items-center justify-between mt-2">
 					<div class="flex items-center border border-gray-200 rounded-md overflow-hidden">
-						<button type="button" class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50"
-							onclick="flavorMiniCartQty('<?php echo esc_js( $cart_item_key ); ?>', <?php echo max( 0, $cart_item['quantity'] - 1 ); ?>)">
+						<button type="button" class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50" onclick="flavorMiniCartQty('<?php echo esc_js( $cart_item_key ); ?>', <?php echo max( 0, $cart_item['quantity'] - 1 ); ?>)">
 							<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
 						</button>
 						<span class="w-8 text-center text-xs font-medium"><?php echo absint( $cart_item['quantity'] ); ?></span>
-						<button type="button" class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50"
-							onclick="flavorMiniCartQty('<?php echo esc_js( $cart_item_key ); ?>', <?php echo $cart_item['quantity'] + 1; ?>)">
+						<button type="button" class="w-7 h-7 flex items-center justify-center text-gray-500 hover:bg-gray-50" onclick="flavorMiniCartQty('<?php echo esc_js( $cart_item_key ); ?>', <?php echo $cart_item['quantity'] + 1; ?>)">
 							<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
 						</button>
 					</div>
-					<button type="button" class="text-gray-400 hover:text-red-500 transition-colors"
-						onclick="flavorMiniCartRemove('<?php echo esc_js( $cart_item_key ); ?>')"
-						aria-label="<?php esc_attr_e( 'Remove', 'flavor' ); ?>">
+					<button type="button" class="text-gray-400 hover:text-red-500 transition-colors" onclick="flavorMiniCartRemove('<?php echo esc_js( $cart_item_key ); ?>')" aria-label="<?php esc_attr_e( 'Remove', 'flavor' ); ?>">
 						<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
 					</button>
 				</div>
@@ -576,16 +614,98 @@ function flavor_mini_cart_response() {
 		</li>
 		<?php
 	}
-	$html = ob_get_clean();
+
+	return ob_get_clean();
+}
+
+/**
+ * Helper — render full mini-cart items panel.
+ *
+ * @return string
+ */
+function flavor_get_mini_cart_items_html() {
+	if ( ! WC()->cart || WC()->cart->is_empty() ) {
+		return flavor_get_mini_cart_empty_html();
+	}
+
+	$list_items_html = trim( flavor_get_mini_cart_list_items_html() );
+
+	if ( '' === $list_items_html ) {
+		return flavor_get_mini_cart_empty_html();
+	}
+
+	return '<ul class="space-y-4">' . $list_items_html . '</ul>';
+}
+
+/**
+ * Helper — render mini-cart footer content.
+ *
+ * @return string
+ */
+function flavor_get_mini_cart_footer_html() {
+	if ( ! WC()->cart || WC()->cart->is_empty() ) {
+		return '';
+	}
+
+	ob_start();
+	?>
+	<div class="flex justify-between text-sm">
+		<span class="text-gray-600"><?php esc_html_e( 'Subtotal', 'flavor' ); ?></span>
+		<span class="font-bold mini-cart-subtotal"><?php wc_cart_totals_subtotal_html(); ?></span>
+	</div>
+	<a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="block w-full text-center border-2 border-gray-900 text-gray-900 font-semibold py-3 rounded-xl hover:bg-gray-900 hover:text-white transition-colors">
+		<?php esc_html_e( 'View Cart', 'flavor' ); ?>
+	</a>
+	<a href="<?php echo esc_url( wc_get_checkout_url() ); ?>" class="block w-full text-center bg-[var(--color-primary,#E15726)] text-white font-semibold py-3 rounded-xl hover:opacity-90 transition-opacity">
+		<?php esc_html_e( 'Checkout', 'flavor' ); ?>
+	</a>
+	<?php
+
+	return ob_get_clean();
+}
+
+/**
+ * Helper — get mini cart response data.
+ */
+function flavor_mini_cart_response() {
+	if ( ! WC()->cart ) {
+		return array(
+			'html'       => flavor_get_mini_cart_empty_html(),
+			'items_html' => flavor_get_mini_cart_empty_html(),
+			'footer_html'=> '',
+			'total'      => '',
+			'count'      => 0,
+		);
+	}
+
+	WC()->cart->calculate_totals();
+
+	$items_html  = flavor_get_mini_cart_items_html();
+	$footer_html = flavor_get_mini_cart_footer_html();
 
 	return array(
-		'html'  => $html,
-		'total' => WC()->cart->get_cart_subtotal(),
-		'count' => WC()->cart->get_cart_contents_count(),
+		'html'       => $items_html,
+		'items_html' => $items_html,
+		'footer_html'=> $footer_html,
+		'total'      => WC()->cart->get_cart_subtotal(),
+		'count'      => (int) WC()->cart->get_cart_contents_count(),
 	);
 }
 
+/**
+ * Mini Cart — current cart contents.
+ */
+function flavor_get_mini_cart_handler() {
+	check_ajax_referer( 'flavor_ajax_nonce', 'nonce' );
+
+	wp_send_json_success( flavor_mini_cart_response() );
+}
+add_action( 'wp_ajax_flavor_get_mini_cart', 'flavor_get_mini_cart_handler' );
+add_action( 'wp_ajax_nopriv_flavor_get_mini_cart', 'flavor_get_mini_cart_handler' );
+
 function flavor_mini_cart_remove_handler() {
+	check_ajax_referer( 'flavor_ajax_nonce', 'nonce' );
+
 	$cart_key = isset( $_POST['cart_key'] ) ? sanitize_text_field( $_POST['cart_key'] ) : '';
 	if ( $cart_key && WC()->cart ) {
 		WC()->cart->remove_cart_item( $cart_key );
@@ -600,6 +720,8 @@ add_action( 'wp_ajax_nopriv_flavor_mini_cart_remove', 'flavor_mini_cart_remove_h
  * Mini Cart — Update item quantity.
  */
 function flavor_mini_cart_qty_handler() {
+	check_ajax_referer( 'flavor_ajax_nonce', 'nonce' );
+
 	$cart_key = isset( $_POST['cart_key'] ) ? sanitize_text_field( $_POST['cart_key'] ) : '';
 	$quantity = isset( $_POST['quantity'] ) ? absint( $_POST['quantity'] ) : 1;
 	if ( $cart_key && WC()->cart ) {

@@ -8,26 +8,9 @@
  * Refresh mini-cart contents via AJAX.
  */
 function refreshMiniCart() {
-    const miniCart = document.querySelector('.mini-cart-contents');
-    if (!miniCart) return;
-
-    const ajax = window.flavorAjax || window.flavorData || {};
-    const ajaxUrl = ajax.url || ajax.ajaxUrl;
-    if (!ajaxUrl) return;
-
-    fetch(ajaxUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-            action: 'flavor_get_mini_cart',
-            nonce: ajax.nonce || '',
-        }),
-    })
-        .then((res) => res.text())
-        .then((html) => {
-            miniCart.innerHTML = html;
-        })
-        .catch((err) => console.error('Mini-cart refresh failed:', err));
+    if (typeof window.flavorRefreshMiniCart === 'function') {
+        window.flavorRefreshMiniCart();
+    }
 }
 
 // WooCommerce added_to_cart event.

@@ -64,9 +64,9 @@ for ( $i = 0; $i < 4; $i++ ) {
 			<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
 		</button>
 
-		<div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-300 overflow-x-auto">
-			<?php foreach ( $usps as $usp ) : ?>
-				<div class="flex items-center gap-3 px-4 py-3 min-w-[200px]">
+		<div class="grid grid-cols-2 md:grid-cols-4">
+			<?php foreach ( $usps as $index => $usp ) : ?>
+				<div class="flex min-w-0 items-center gap-2 px-2.5 py-2 md:gap-3 md:px-4 md:py-3 <?php echo $index % 2 === 1 ? 'border-l border-gray-300' : ''; ?> <?php echo $index > 0 ? 'md:border-l md:border-gray-300' : ''; ?>">
 					<span class="text-primary flex-shrink-0"><?php echo $usp['icon']; // phpcs:ignore -- safe, hardcoded SVG from defaults ?></span>
 					<div class="min-w-0">
 						<p class="text-sm font-medium text-gray-700 truncate"><?php echo esc_html( $usp['title'] ); ?></p>

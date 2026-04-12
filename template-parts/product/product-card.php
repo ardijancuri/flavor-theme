@@ -11,12 +11,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $product;
 
-$product_id    = $product->get_id();
-$permalink     = $product->get_permalink();
-$image_id      = $product->get_image_id();
-$regular_price = (float) $product->get_regular_price();
-$sale_price    = $product->is_on_sale() ? (float) $product->get_sale_price() : 0;
-$current_price = $sale_price ? $sale_price : $regular_price;
+$product_id = $product->get_id();
+$permalink  = $product->get_permalink();
+$image_id   = $product->get_image_id();
+$price_html = flavor_price_html_with_small_decimals( $product->get_price_html() );
+
+if ( $product->is_type( 'variable' ) ) {
+	$regular_price = (float) $product->get_variation_regular_price( 'min', false );
+	$sale_price    = $product->is_on_sale() ? (float) $product->get_variation_sale_price( 'min', false ) : 0;
+} else {
+	$regular_price = (float) $product->get_regular_price();
+	$sale_price    = $product->is_on_sale() ? (float) $product->get_sale_price() : 0;
+}
 $discount_pct  = ( $regular_price && $sale_price ) ? round( ( ( $regular_price - $sale_price ) / $regular_price ) * 100 ) : 0;
 $rating        = $product->get_average_rating();
 $review_count  = $product->get_review_count();
@@ -39,22 +45,26 @@ $stock_status  = $product->get_stock_status();
 			</div>
 		<?php endif; ?>
 
-		<?php if ( $discount_pct > 0 ) : ?>
-			<span class="absolute top-2 left-2 bg-red text-white text-xs font-bold px-1.5 py-0.5 rounded">
-				-<?php echo absint( $discount_pct ); ?>%
-			</span>
-		<?php endif; ?>
+		<?php if ( $discount_pct > 0 || 'outofstock' === $stock_status ) : ?>
+			<div class="absolute top-2 left-2 z-10 flex max-w-[calc(100%-3.5rem)] flex-col items-start gap-1">
+				<?php if ( $discount_pct > 0 ) : ?>
+					<span class="bg-red text-white text-xs font-bold px-1.5 py-0.5 rounded">
+						-<?php echo absint( $discount_pct ); ?>%
+					</span>
+				<?php endif; ?>
 
-		<?php if ( 'outofstock' === $stock_status ) : ?>
-			<span class="absolute top-2 right-2 bg-gray-700 text-white text-xs px-1.5 py-0.5 rounded">
-				<?php esc_html_e( 'Out of stock', 'flavor' ); ?>
-			</span>
+				<?php if ( 'outofstock' === $stock_status ) : ?>
+					<span class="bg-gray-700 text-white text-xs px-1.5 py-0.5 rounded">
+						<?php esc_html_e( 'Out of stock', 'flavor' ); ?>
+					</span>
+				<?php endif; ?>
+			</div>
 		<?php endif; ?>
 
 		<!-- Wishlist button -->
 		<button
 			@click.prevent.stop="$store.wishlist.toggle(<?php echo absint( $product_id ); ?>)"
-			class="absolute top-2 right-2 p-1.5 bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-red"
+			class="absolute top-2 right-2 z-10 p-1.5 bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-red"
 			:class="$store.wishlist.has(<?php echo absint( $product_id ); ?>) && '!opacity-100 text-red'"
 			aria-label="<?php esc_attr_e( 'Toggle wishlist', 'flavor' ); ?>"
 		>
@@ -84,14 +94,13 @@ $stock_status  = $product->get_stock_status();
 		<?php endif; ?>
 
 		<!-- Price -->
-		<div class="mt-2">
-			<?php if ( $sale_price ) : ?>
-				<span class="text-xs text-gray-500 line-through"><?php echo wp_kses_post( wc_price( $regular_price ) ); ?></span>
-			<?php endif; ?>
-			<span class="block text-base font-bold text-gray-700"><?php echo wp_kses_post( wc_price( $current_price ) ); ?></span>
-		</div>
+		<?php if ( $price_html ) : ?>
+			<div class="product-card-price mt-2 text-base font-bold text-gray-700">
+				<?php echo wp_kses_post( $price_html ); ?>
+			</div>
+		<?php endif; ?>
 
-		<!-- Quick add to cart -->
+		<!-- Product CTA -->
 		<?php if ( $product->is_purchasable() && $product->is_in_stock() && $product->is_type( 'simple' ) ) : ?>
 		<button
 			@click.prevent="
@@ -109,10 +118,12 @@ $stock_status  = $product->get_stock_status();
 						btn.disabled = false;
 						btn.textContent = '<?php esc_attr_e( 'Add to Cart', 'flavor' ); ?>';
 						if (res.success) {
+							if (window.flavorApplyMiniCart && res.data && res.data.mini_cart) {
+								window.flavorApplyMiniCart(res.data.mini_cart);
+							} else if (window.flavorRefreshMiniCart) {
+								window.flavorRefreshMiniCart();
+							}
 							window.dispatchEvent(new CustomEvent('cart-added', { detail: { message: '<?php esc_attr_e( 'Added to cart!', 'flavor' ); ?>' } }));
-							const c = document.querySelector('.cart-count');
-							if (c && res.data.cart_count) { c.textContent = res.data.cart_count; c.classList.remove('hidden'); }
-							document.dispatchEvent(new Event('added_to_cart'));
 						} else {
 							window.dispatchEvent(new CustomEvent('toast', { detail: { message: res.data?.message || 'Error', type: 'error' } }));
 						}
@@ -122,6 +133,13 @@ $stock_status  = $product->get_stock_status();
 		>
 			<?php esc_html_e( 'Add to Cart', 'flavor' ); ?>
 		</button>
+		<?php elseif ( $product->is_type( 'variable' ) ) : ?>
+		<a
+			href="<?php echo esc_url( $permalink ); ?>"
+			class="mt-2 block w-full rounded border border-primary py-1.5 text-center text-xs font-medium text-primary transition-colors hover:bg-primary hover:text-white"
+		>
+			<?php esc_html_e( 'Read More', 'flavor' ); ?>
+		</a>
 		<?php endif; ?>
 	</div>
 </div>

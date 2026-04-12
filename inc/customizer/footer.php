@@ -19,6 +19,17 @@ function flavor_customizer_footer( $wp_customize ) {
         'priority' => 35,
     ) );
 
+    $wp_customize->add_setting( 'flavor_footer_brand_text', array(
+        'default'           => esc_html__( 'Stay connected', 'flavor' ),
+        'sanitize_callback' => 'sanitize_textarea_field',
+    ) );
+    $wp_customize->add_control( 'flavor_footer_brand_text', array(
+        'label'       => esc_html__( 'Footer Description', 'flavor' ),
+        'description' => esc_html__( 'Shown under the footer logo.', 'flavor' ),
+        'section'     => 'flavor_footer',
+        'type'        => 'textarea',
+    ) );
+
     // Social URLs.
     $socials = array(
         'flavor_social_facebook'  => esc_html__( 'Facebook URL', 'flavor' ),

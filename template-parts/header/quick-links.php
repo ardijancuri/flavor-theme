@@ -48,12 +48,12 @@ defined( 'ABSPATH' ) || exit;
         <!-- Right: Chat -->
         <button
             class="flex items-center gap-1.5 text-sm text-gray-600 hover:text-primary transition-colors"
-            aria-label="<?php esc_attr_e( 'Chat with us', 'flavor' ); ?>"
+            aria-label="<?php esc_attr_e( 'Chat', 'flavor' ); ?>"
         >
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            <span class="hidden lg:inline"><?php esc_html_e( 'Chat with us', 'flavor' ); ?></span>
+            <span class="hidden lg:inline"><?php esc_html_e( 'Chat', 'flavor' ); ?></span>
         </button>
     </div>
 </nav>

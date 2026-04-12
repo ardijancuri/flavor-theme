@@ -17,7 +17,7 @@ $type = $args['type'] ?? 'default';
 	<div class="animate-pulse">
 		<div class="h-5 bg-gray-200 rounded w-48 mb-4"></div>
 		<div class="h-10 bg-gray-200 rounded w-full mb-6"></div>
-		<div class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
+		<div class="grid grid-cols-2 tablet-sm:grid-cols-3 md:grid-cols-4 gap-4">
 			<?php for ( $i = 0; $i < 8; $i++ ) : ?>
 				<?php get_template_part( 'template-parts/product/product-card-skeleton' ); ?>
 			<?php endfor; ?>

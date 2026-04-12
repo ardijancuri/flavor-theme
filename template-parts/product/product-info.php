@@ -17,11 +17,13 @@ $active_price  = (float) $product->get_price();
 $is_on_sale    = $product->is_on_sale() && $regular_price > 0;
 $discount_pct  = $is_on_sale ? round( ( ( $regular_price - $sale_price ) / $regular_price ) * 100 ) : 0;
 $savings       = $is_on_sale ? $regular_price - $sale_price : 0;
-$price_no_vat  = $active_price / 1.19; // 19% VAT assumed
+$price_no_vat  = $active_price / 1.18; // 18% VAT assumed
 $stock_qty     = $product->get_stock_quantity();
 $sku           = $product->get_sku();
 $brand_terms   = get_the_terms( $product->get_id(), 'pa_brand' );
 $warranty_yrs  = get_post_meta( $product->get_id(), '_flavor_warranty_years', true );
+$regular_price_html = flavor_price_html_with_small_decimals( wc_price( $regular_price ) );
+$active_price_html  = flavor_price_html_with_small_decimals( wc_price( $active_price ) );
 ?>
 
 <div class="space-y-4">
@@ -53,12 +55,12 @@ $warranty_yrs  = get_post_meta( $product->get_id(), '_flavor_warranty_years', tr
 
 	<!-- Price block -->
 	<div class="space-y-1">
-		<div class="flex items-center gap-3 flex-wrap">
+		<div class="product-single-price flex items-center gap-3 flex-wrap">
 			<?php if ( $is_on_sale ) : ?>
-				<span class="text-sm text-gray-400 line-through"><?php echo wc_price( $regular_price ); ?></span>
+				<span class="text-sm text-gray-400 line-through"><?php echo wp_kses_post( $regular_price_html ); ?></span>
 			<?php endif; ?>
 
-			<span class="text-2xl font-bold text-gray-900"><?php echo wc_price( $active_price ); ?></span>
+			<span class="text-2xl font-bold text-gray-900"><?php echo wp_kses_post( $active_price_html ); ?></span>
 
 			<?php if ( $is_on_sale && $discount_pct > 0 ) : ?>
 				<span class="bg-red-600 text-white text-xs font-semibold rounded-full px-2 py-0.5">
@@ -79,14 +81,11 @@ $warranty_yrs  = get_post_meta( $product->get_id(), '_flavor_warranty_years', tr
 		</p>
 	</div>
 
-	<!-- Stock -->
 	<div class="text-sm font-medium">
-		<?php if ( ! $product->is_in_stock() ) : ?>
-			<span class="text-red-600"><?php esc_html_e( 'Out of stock', 'flavor' ); ?></span>
-		<?php elseif ( $stock_qty === null || $stock_qty > 10 ) : ?>
-			<span class="text-green-600"><?php esc_html_e( 'More than 10 in stock', 'flavor' ); ?></span>
-		<?php elseif ( $stock_qty > 0 ) : ?>
+		<?php if ( $product->is_in_stock() ) : ?>
 			<span class="text-green-600"><?php esc_html_e( 'In stock', 'flavor' ); ?></span>
+		<?php else : ?>
+			<span class="text-red-600"><?php esc_html_e( 'Out of stock', 'flavor' ); ?></span>
 		<?php endif; ?>
 	</div>
 

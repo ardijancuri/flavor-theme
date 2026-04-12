@@ -30,7 +30,7 @@ $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalin
                 </button>
 
                 <?php if ( has_custom_logo() ) : ?>
-                    <div class="max-w-[110px] max-h-[32px]">
+                    <div class="site-header-branding flex shrink-0 items-center overflow-hidden leading-none">
                         <?php the_custom_logo(); ?>
                     </div>
                 <?php else : ?>

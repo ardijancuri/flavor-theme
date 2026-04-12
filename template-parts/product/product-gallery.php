@@ -18,14 +18,14 @@ $image_ids = array();
 if ( $main_image_id ) {
 	$image_ids[] = $main_image_id;
 }
-$image_ids = array_merge( $image_ids, $attachment_ids );
+$image_ids = array_values( array_unique( array_filter( array_merge( $image_ids, $attachment_ids ) ) ) );
 $total     = count( $image_ids );
 ?>
 
-<div class="relative" x-data="{ currentSlide: 1 }">
+<div class="relative js-product-gallery-wrap">
 	<?php if ( $total > 1 ) : ?>
 	<div class="absolute top-3 right-3 z-10 bg-black/50 text-white text-xs px-2 py-1 rounded-full">
-		<span x-text="currentSlide"></span> / <?php echo absint( $total ); ?>
+		<span class="js-product-gallery-current">1</span> / <?php echo absint( $total ); ?>
 	</div>
 	<?php endif; ?>
 
@@ -39,20 +39,14 @@ $total     = count( $image_ids );
 			<div class="swiper-slide">
 				<a href="<?php echo esc_url( $full_url ); ?>" class="glightbox js-gallery-lightbox" data-gallery="product-gallery">
 					<img
-						<?php if ( $index === 0 ) : ?>
-							src="<?php echo esc_url( $med_url ); ?>"
-						<?php else : ?>
-							data-src="<?php echo esc_url( $med_url ); ?>"
-							class="swiper-lazy"
-						<?php endif; ?>
+						src="<?php echo esc_url( $med_url ); ?>"
 						alt="<?php echo esc_attr( $alt ); ?>"
 						class="w-full aspect-square object-contain"
 						width="600"
 						height="600"
+						loading="<?php echo 0 === $index ? 'eager' : 'lazy'; ?>"
+						decoding="async"
 					>
-					<?php if ( $index > 0 ) : ?>
-					<div class="swiper-lazy-preloader"></div>
-					<?php endif; ?>
 				</a>
 			</div>
 			<?php endforeach; ?>
@@ -81,39 +75,3 @@ $total     = count( $image_ids );
 	</div>
 	<?php endif; ?>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-	if (typeof Swiper === 'undefined') return;
-	var mainEl = document.querySelector('.product-gallery-swiper');
-	if (!mainEl || mainEl.swiper) return;
-
-	var thumbsEl = document.querySelector('.product-gallery-thumbs');
-	var thumbsSwiper = null;
-	if (thumbsEl && !thumbsEl.swiper) {
-		thumbsSwiper = new Swiper(thumbsEl, {
-			spaceBetween: 8,
-			slidesPerView: 4,
-			freeMode: true,
-			watchSlidesProgress: true,
-		});
-	}
-
-	var mainSwiper = new Swiper(mainEl, {
-		spaceBetween: 0,
-		lazy: true,
-		pagination: { el: '.swiper-pagination', clickable: true },
-		navigation: {
-			nextEl: '.js-gallery-next',
-			prevEl: '.js-gallery-prev',
-		},
-		thumbs: thumbsSwiper ? { swiper: thumbsSwiper } : undefined,
-		on: {
-			slideChange: function() {
-				var el = document.querySelector('[x-data]');
-				if (el && el.__x) el.__x.$data.currentSlide = this.activeIndex + 1;
-			}
-		}
-	});
-});
-</script>

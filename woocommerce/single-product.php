@@ -18,6 +18,7 @@ while ( have_posts() ) :
 	the_post();
 
 	global $product;
+	$sticky_price_html = flavor_price_html_with_small_decimals( $product->get_price_html() );
 ?>
 
 <div class="max-w-site-xxl mx-auto px-3 md:px-4" x-data="productPage(<?php echo esc_attr( wp_json_encode( array(
@@ -37,10 +38,6 @@ while ( have_posts() ) :
 		</div>
 		<div>
 			<?php get_template_part( 'template-parts/product/product-info' ); ?>
-
-			<?php if ( get_theme_mod( 'flavor_installment_enabled', true ) ) : ?>
-				<?php get_template_part( 'template-parts/product/installment-display' ); ?>
-			<?php endif; ?>
 
 			<?php if ( get_theme_mod( 'flavor_warranty_enabled', true ) ) : ?>
 				<?php get_template_part( 'template-parts/product/warranty-upsell' ); ?>
@@ -72,7 +69,7 @@ while ( have_posts() ) :
 >
 	<div class="flex items-center justify-between gap-3">
 		<div>
-			<span class="text-lg font-bold"><?php echo wp_kses_post( $product->get_price_html() ); ?></span>
+			<span class="product-single-sticky-price text-lg font-bold"><?php echo wp_kses_post( $sticky_price_html ); ?></span>
 		</div>
 		<button
 			@click="$dispatch('add-to-cart', { id: <?php echo absint( $product->get_id() ); ?>, qty: 1 })"

@@ -10,6 +10,14 @@ document.addEventListener('alpine:init', () => {
   const ajaxUrl = (window.flavorData || {}).ajaxUrl || (window.flavorAjax || {}).url || '/wp-admin/admin-ajax.php';
   const nonce   = (window.flavorData || {}).nonce   || (window.flavorAjax || {}).nonce || '';
 
+  Alpine.store('ui', {
+    cookieBannerTop: 0,
+
+    setCookieBannerTop(value) {
+      this.cookieBannerTop = Number(value) || 0;
+    },
+  });
+
   function post(action, body = {}) {
     const fd = new FormData();
     fd.append('action', action);
@@ -50,6 +58,62 @@ document.addEventListener('alpine:init', () => {
         this.loading = false;
       }).catch(() => {
         this.loading = false;
+      });
+    },
+  }));
+
+  Alpine.data('flavorAllProducts', (opts = {}) => ({
+    page: 1,
+    maxPages: Number(opts.maxPages) || 1,
+    perPage: Number(opts.perPage) || 10,
+    loading: false,
+    ended: !!opts.ended,
+
+    loadMore() {
+      if (this.loading || this.ended) return;
+
+      const nextPage = this.page + 1;
+      const grid = this.$refs.grid;
+
+      if (!grid) {
+        this.ended = true;
+        return;
+      }
+
+      this.loading = true;
+
+      post('flavor_load_more_products', {
+        page: nextPage,
+        per_page: this.perPage,
+      }).then((res) => {
+        if (!res.success || !res.data) {
+          this.loading = false;
+          window.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Could not load more products.', type: 'error' } }));
+          return;
+        }
+
+        const html = String(res.data.html || '').trim();
+        const hasMore = typeof res.data.has_more === 'boolean'
+          ? res.data.has_more
+          : nextPage < this.maxPages;
+
+        if (html) {
+          const fragment = document.createRange().createContextualFragment(html);
+          const newNodes = Array.from(fragment.childNodes).filter((node) => node.nodeType === Node.ELEMENT_NODE);
+
+          grid.appendChild(fragment);
+          this.page = nextPage;
+
+          if (window.Alpine && typeof window.Alpine.initTree === 'function') {
+            newNodes.forEach((node) => window.Alpine.initTree(node));
+          }
+        }
+
+        this.ended = !hasMore || !html;
+        this.loading = false;
+      }).catch(() => {
+        this.loading = false;
+        window.dispatchEvent(new CustomEvent('toast', { detail: { message: 'Could not load more products.', type: 'error' } }));
       });
     },
   }));
@@ -171,6 +235,12 @@ document.addEventListener('alpine:init', () => {
       }).then(res => {
         this.addingToCart = false;
         if (res.success) {
+          if (window.flavorApplyMiniCart && res.data && res.data.mini_cart) {
+            window.flavorApplyMiniCart(res.data.mini_cart);
+          } else if (window.flavorRefreshMiniCart) {
+            window.flavorRefreshMiniCart();
+          }
+
           if (redirect) {
             window.location.href = (window.flavorData || {}).checkoutUrl || '/checkout/';
           } else {
@@ -188,7 +258,7 @@ document.addEventListener('alpine:init', () => {
 
   /* ── Shop / Archive Page Component ───────────────────────── */
 
-  Alpine.data('shopPage', () => ({
+  Alpine.data('shopPage', (opts = {}) => ({
     view: 'grid',
     quickFilter: '',
     sortBy: 'default',
@@ -196,7 +266,7 @@ document.addEventListener('alpine:init', () => {
     loading: false,
     hasMore: false,
     currentPage: 1,
-    totalProducts: 0,
+    totalProducts: Number(opts.totalProducts) || 0,
     brandSearch: '',
     showAll: false,
     filters: {

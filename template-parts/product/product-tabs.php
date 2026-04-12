@@ -15,11 +15,9 @@ global $product;
 $tabs = array(
 	'description'    => __( 'Description', 'flavor' ),
 	'specifications' => __( 'Specifications', 'flavor' ),
-	'reviews'        => __( 'Reviews', 'flavor' ),
 );
 
-$attributes  = $product->get_attributes();
-$review_count = $product->get_review_count();
+$attributes = $product->get_attributes();
 ?>
 
 <div class="mt-8 md:mt-12" x-data="{ tab: 'description', isMobile: window.innerWidth < 768 }" @resize.window="isMobile = window.innerWidth < 768">
@@ -33,9 +31,6 @@ $review_count = $product->get_review_count();
 				:class="tab === '<?php echo esc_attr( $key ); ?>' ? 'text-primary' : 'text-gray-500 hover:text-gray-700'"
 			>
 				<?php echo esc_html( $label ); ?>
-				<?php if ( 'reviews' === $key && $review_count ) : ?>
-					<span class="ml-1 text-xs text-gray-400">(<?php echo absint( $review_count ); ?>)</span>
-				<?php endif; ?>
 				<span
 					class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-opacity"
 					:class="tab === '<?php echo esc_attr( $key ); ?>' ? 'opacity-100' : 'opacity-0'"
@@ -77,11 +72,6 @@ $review_count = $product->get_review_count();
 				<p class="text-sm text-gray-500"><?php esc_html_e( 'No specifications available.', 'flavor' ); ?></p>
 			<?php endif; ?>
 		</div>
-
-		<!-- Reviews -->
-		<div x-show="tab === 'reviews'">
-			<?php comments_template(); ?>
-		</div>
 	</div>
 
 	<!-- Mobile Accordion -->
@@ -92,12 +82,7 @@ $review_count = $product->get_review_count();
 					@click="tab = tab === '<?php echo esc_attr( $key ); ?>' ? '' : '<?php echo esc_attr( $key ); ?>'"
 					class="flex items-center justify-between w-full px-4 py-3 text-left text-sm font-medium text-gray-900"
 				>
-					<span>
-						<?php echo esc_html( $label ); ?>
-						<?php if ( 'reviews' === $key && $review_count ) : ?>
-							<span class="text-xs text-gray-400">(<?php echo absint( $review_count ); ?>)</span>
-						<?php endif; ?>
-					</span>
+					<span><?php echo esc_html( $label ); ?></span>
 					<svg class="w-4 h-4 text-gray-400 transition-transform" :class="tab === '<?php echo esc_attr( $key ); ?>' && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
 				</button>
 				<div x-show="tab === '<?php echo esc_attr( $key ); ?>'" x-collapse class="px-4 pb-4">
@@ -122,8 +107,6 @@ $review_count = $product->get_review_count();
 						<?php else : ?>
 							<p class="text-sm text-gray-500"><?php esc_html_e( 'No specifications available.', 'flavor' ); ?></p>
 						<?php endif; ?>
-					<?php else : ?>
-						<?php comments_template(); ?>
 					<?php endif; ?>
 				</div>
 			</div>

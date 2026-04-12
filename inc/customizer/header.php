@@ -8,11 +8,99 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Sanitize header logo scale values.
+ *
+ * @param mixed $value Scale percentage.
+ * @return int
+ */
+function flavor_sanitize_logo_scale( $value ) {
+	$value = absint( $value );
+
+	if ( $value < 60 ) {
+		return 60;
+	}
+
+	if ( $value > 160 ) {
+		return 160;
+	}
+
+	return $value;
+}
+
+/**
  * Register header Customizer settings.
  *
  * @param WP_Customize_Manager $wp_customize Customizer manager.
  */
 function flavor_customizer_header( $wp_customize ) {
+
+    $wp_customize->add_setting( 'flavor_logo_scale_mobile', array(
+        'default'           => 100,
+        'sanitize_callback' => 'flavor_sanitize_logo_scale',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'flavor_logo_scale_mobile', array(
+        'label'       => esc_html__( 'Header Logo Size (Mobile %)', 'flavor' ),
+        'description' => esc_html__( 'Scale the logo shown in the main header on mobile devices.', 'flavor' ),
+        'section'     => 'title_tagline',
+        'type'        => 'range',
+        'input_attrs' => array(
+            'min'  => 60,
+            'max'  => 160,
+            'step' => 5,
+        ),
+    ) );
+
+    $wp_customize->add_setting( 'flavor_logo_scale_desktop', array(
+        'default'           => 100,
+        'sanitize_callback' => 'flavor_sanitize_logo_scale',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'flavor_logo_scale_desktop', array(
+        'label'       => esc_html__( 'Header Logo Size (Desktop %)', 'flavor' ),
+        'description' => esc_html__( 'Scale the logo shown in the main header on tablets and desktops.', 'flavor' ),
+        'section'     => 'title_tagline',
+        'type'        => 'range',
+        'input_attrs' => array(
+            'min'  => 60,
+            'max'  => 160,
+            'step' => 5,
+        ),
+    ) );
+
+    $wp_customize->add_setting( 'flavor_footer_logo_scale_mobile', array(
+        'default'           => 100,
+        'sanitize_callback' => 'flavor_sanitize_logo_scale',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'flavor_footer_logo_scale_mobile', array(
+        'label'       => esc_html__( 'Footer Logo Size (Mobile %)', 'flavor' ),
+        'description' => esc_html__( 'Scale the logo shown in the footer on mobile devices.', 'flavor' ),
+        'section'     => 'title_tagline',
+        'type'        => 'range',
+        'input_attrs' => array(
+            'min'  => 60,
+            'max'  => 160,
+            'step' => 5,
+        ),
+    ) );
+
+    $wp_customize->add_setting( 'flavor_footer_logo_scale_desktop', array(
+        'default'           => 100,
+        'sanitize_callback' => 'flavor_sanitize_logo_scale',
+        'transport'         => 'postMessage',
+    ) );
+    $wp_customize->add_control( 'flavor_footer_logo_scale_desktop', array(
+        'label'       => esc_html__( 'Footer Logo Size (Desktop %)', 'flavor' ),
+        'description' => esc_html__( 'Scale the logo shown in the footer on tablets and desktops.', 'flavor' ),
+        'section'     => 'title_tagline',
+        'type'        => 'range',
+        'input_attrs' => array(
+            'min'  => 60,
+            'max'  => 160,
+            'step' => 5,
+        ),
+    ) );
 
     $wp_customize->add_section( 'flavor_header', array(
         'title'    => esc_html__( 'Header', 'flavor' ),
@@ -48,6 +136,16 @@ function flavor_customizer_header( $wp_customize ) {
     ) );
     $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'flavor_topbar_bg_color', array(
         'label'   => esc_html__( 'Top Bar Background Color', 'flavor' ),
+        'section' => 'flavor_header',
+    ) ) );
+
+    // Topbar text color.
+    $wp_customize->add_setting( 'flavor_topbar_text_color', array(
+        'default'           => '#FFFFFF',
+        'sanitize_callback' => 'sanitize_hex_color',
+    ) );
+    $wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'flavor_topbar_text_color', array(
+        'label'   => esc_html__( 'Top Bar Text Color', 'flavor' ),
         'section' => 'flavor_header',
     ) ) );
 
